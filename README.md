@@ -2,6 +2,8 @@
 
 A desktop shell for the `omp` CLI coding agent. OMP Desktop launches `omp` sessions, streams their RPC output into a native chat workspace, and keeps terminals and git close at hand.
 
+![OMP Desktop - new session view](docs/screenshot.png)
+
 > **Status: early development.** Primarily built for Windows (WebView2). Usable for day-to-day session work, but expect rough edges and breaking changes.
 
 ## Features
