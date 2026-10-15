@@ -1,3 +1,19 @@
-build/bin
-node_modules
-frontend/dist
+# Dependencies
+node_modules/
+
+# Build output
+build/bin/
+frontend/dist/
+
+# Root-level build binaries (leftovers from `go build` / `wails build` in the repo root)
+/omp-desktop
+/omp-desktop.exe
+
+# Local environment files
+.env
+.env.*
+
+# Logs and OS cruft
+*.log
+.DS_Store
+Thumbs.db
