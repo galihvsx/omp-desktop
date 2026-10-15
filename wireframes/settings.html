@@ -1,0 +1,4747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OMP Desktop — Settings (Wireframe Prototype)</title>
+  
+  <!-- Google Fonts: Patrick Hand & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Bundled local scripts in the same folder -->
+  <script src="wired-elements.bundle.js"></script>
+  <script src="settings-icons.js"></script>
+  <script src="settings-data.js"></script>
+
+  <style>
+    
+/* ========================================================
+   AGILEK WIREFRAMER SPECIFICATION: STRICT GRAYSCALE & RULES
+   ======================================================== */
+:root {
+  --ink: #333333;
+  --ink-light: #555555;
+  --ink-muted: #6b6b6b;
+  --paper: #ffffff;
+  --paper-subtle: #f9f9f9;
+  --paper-shade: #eeeeee;
+  --line-strong: #333333;
+  --line-soft: #d5d5d5;
+  --primary-blue: #2b6cb0; /* Single allowed muted sketchy blue for primary links/actions */
+  --sketch-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --sketch-radius-sm: 180px 10px 160px 10px / 10px 160px 10px 180px;
+  --sketch-radius-pill: 255px 25px 225px 25px / 25px 225px 25px 255px;
+  
+  /* Wired Elements CSS Variables */
+  --wired-toggle-on-color: #333333;
+  --wired-toggle-off-color: #aaaaaa;
+  --wired-slider-knob-color: #333333;
+  --wired-slider-bar-color: #333333;
+  --wired-slider-knob-outline-color: #000000;
+  --wired-radio-icon-color: #333333;
+  --wired-checkbox-icon-color: #333333;
+  --wired-combo-popup-bg: #ffffff;
+  --wired-item-selected-bg: #333333;
+  --wired-item-selected-color: #ffffff;
+  --wired-dialog-z-index: 9999;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+svg.di {
+  display: block;
+  flex: none;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  background-image: radial-gradient(#d7d7d7 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Typography scale per agilek skill: Never below 13px anywhere */
+.text-xs { font-size: 14px; }
+.text-sm { font-size: 18px; }
+.text-base { font-size: 22px; }
+.text-md { font-size: 28px; }
+.text-lg { font-size: 35px; }
+.text-xl { font-size: 44px; }
+
+/* Links: Grayscale with single muted blue for primary only, all underlined */
+a, .link-primary {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
+a.link-secondary, .link-secondary {
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Buttons: Plain <button> with sketchy radius */
+button {
+  font-family: 'Patrick Hand', cursive, sans-serif;
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  user-select: none;
+}
+button:active {
+  transform: translate(1px, 1px);
+}
+.btn-primary {
+  background: #333333;
+  color: #ffffff;
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius);
+  padding: 10px 24px;
+}
+.btn-primary:hover {
+  background: #222222;
+}
+.btn-secondary {
+  background: #ffffff;
+  color: #333333;
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius);
+  padding: 10px 24px;
+}
+.btn-secondary:hover {
+  background: #f7f7f7;
+}
+.btn-sm {
+  padding: 5px 14px;
+  font-size: 15.5px;
+}
+.btn-xs {
+  padding: 2px 8px;
+  font-size: 13.5px;
+}
+.btn-disabled, button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Outer Window Shell (1280x768 frameless window aspect) */
+.window-shell {
+  width: 1280px;
+  height: 768px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  background: var(--paper);
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 6px 8px 0px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Window Chrome / Frameless Titlebar */
+.window-titlebar {
+  height: 44px;
+  border-bottom: 2px solid #333333;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  user-select: none;
+  flex-shrink: 0;
+}
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 18.5px;
+}
+.titlebar-center {
+  font-size: 15px;
+  color: #555555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titlebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.window-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444444;
+}
+.window-btn:hover {
+  border: 1px solid #333333;
+  background: #eeeeee;
+}
+
+/* App Body Layout */
+.window-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* Left Rail Nav (approx 228px) */
+.left-rail {
+  width: 228px;
+  flex-shrink: 0;
+  border-right: 2px solid #333333;
+  background: #fafafa;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px;
+  gap: 12px;
+}
+.back-btn {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 6px 12px;
+  font-size: 16px;
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius-sm);
+  background: #ffffff;
+}
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-group-title {
+  font-size: 13px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #6b6b6b;
+  padding: 4px 8px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+}
+.omp-chip {
+  background: #333333;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--sketch-radius-sm);
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: #444444;
+  text-align: left;
+  width: 100%;
+  transition: all 0.1s ease;
+}
+.nav-item:hover {
+  background: #eeeeee;
+  color: #111111;
+}
+.nav-item.active {
+  background: #ffffff;
+  border: 2px solid #333333;
+  color: #111111;
+  font-weight: bold;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+/* Main Pane */
+.main-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.main-header {
+  height: 78px;
+  border-bottom: 2px solid #333333;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.main-header #settings-search {
+  width: 200px;
+  flex: none;
+}
+.header-title-area {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.header-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-desc {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1.5px solid #333333;
+  border-radius: var(--sketch-radius-pill);
+  font-size: 14px;
+  background: #ffffff;
+}
+
+/* Scroll area for screens */
+.main-content-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Search Banner */
+.search-banner {
+  background: #f7f7f7;
+  border: 1.5px solid #333333;
+  border-radius: var(--sketch-radius-sm);
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Screens */
+.screen {
+  display: none;
+}
+.screen.active {
+  display: block;
+}
+
+/* Sticky Footer */
+.sticky-footer {
+  height: 54px;
+  border-top: 2px solid #333333;
+  background: #fafafa;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.dirty-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15.5px;
+  color: #555555;
+}
+.dirty-indicator.is-dirty {
+  font-weight: bold;
+  color: #111111;
+}
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Settings Cards & Rows (mirroring real app anatomy) */
+.settings-card {
+  background: #ffffff;
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius);
+  margin-bottom: 22px;
+  overflow: visible;
+  position: relative;
+}
+.card-header {
+  padding: 10px 18px;
+  border-bottom: 2px dashed #cccccc;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 17.5px;
+}
+.setting-row {
+  padding: 13px 18px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.setting-row:last-child {
+  border-bottom: none;
+}
+.setting-info {
+  flex: 1;
+  min-width: 0;
+}
+.setting-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+.setting-label {
+  font-size: 17px;
+  font-weight: bold;
+  color: #111111;
+}
+.setting-key-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: #f0f0f0;
+  border: 1px solid #cccccc;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #555555;
+}
+.setting-desc {
+  font-size: 14.5px;
+  color: #666666;
+  margin: 0;
+  line-height: 1.35;
+}
+.setting-control {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+/* Special Badges */
+.badge-modified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  border: 1px solid #333333;
+  background: #eeeeee;
+  padding: 1px 6px;
+  border-radius: var(--sketch-radius-pill);
+  font-weight: bold;
+}
+.badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #333333;
+  display: inline-block;
+}
+.badge-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  border: 1px dashed #555555;
+  background: #fdfdfd;
+  padding: 1px 6px;
+  border-radius: var(--sketch-radius-pill);
+}
+.badge-experimental {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  border: 1.5px solid #222222;
+  background: #333333;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: var(--sketch-radius-pill);
+}
+.badge-secret {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  border: 1px solid #555555;
+  background: #2b2b2b;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: var(--sketch-radius-pill);
+}
+.badge-sentinel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  border: 1px solid #6b6b6b;
+  background: #f2f2f2;
+  padding: 1px 6px;
+  border-radius: var(--sketch-radius-pill);
+}
+.btn-reset {
+  background: transparent;
+  border: 1px solid #6b6b6b;
+  border-radius: var(--sketch-radius-sm);
+  padding: 2px 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #333333;
+}
+.btn-reset:hover {
+  background: #eeeeee;
+  border-color: #333333;
+}
+
+/* Model Roles Table */
+.roles-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.roles-table th {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 2px solid #333333;
+  font-size: 15px;
+  color: #555555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.roles-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+.roles-table tr:last-child td {
+  border-bottom: none;
+}
+.role-name {
+  font-weight: bold;
+  font-size: 16.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.role-model {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  color: #222222;
+  background: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+.role-effort {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: #333333;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  background: #ffffff;
+  border: 2px solid #333333;
+  border-radius: var(--sketch-radius);
+  padding: 12px 20px;
+  box-shadow: 4px 6px 0 rgba(0,0,0,0.18);
+  font-size: 16px;
+  font-weight: bold;
+  display: none;
+  z-index: 10000;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Custom styles for wired elements to ensure proper rendering */
+wired-card {
+  background: #ffffff !important;
+}
+wired-combo {
+  background: #ffffff;
+  min-width: 190px;
+}
+wired-item {
+  font-family: 'Patrick Hand', cursive, sans-serif;
+  font-size: 16px;
+}
+wired-input {
+  background: #ffffff;
+}
+wired-textarea {
+  background: #ffffff;
+}
+wired-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Main 1280x768 Frameless Window Prototype -->
+  <div class="window-shell">
+    
+    <!-- Frameless Window Chrome / Titlebar -->
+    <div class="window-titlebar">
+      <div class="titlebar-left">
+        <span data-icon="BotIcon" data-icon-size="22"></span>
+        <span>OMP Desktop</span>
+        <span style="font-size:13.5px;color:#6b6b6b;font-weight:normal;margin-left:4px;">(Wails v2 · omp CLI Shell)</span>
+      </div>
+      <div class="titlebar-center">
+        <span data-icon="SettingIcon" data-icon-size="16"></span>
+        <span id="titlebar-center-text">Settings — General Preferences</span>
+      </div>
+      <div class="titlebar-controls">
+        <div class="window-btn" title="Minimize Window"><span data-icon="MinimizeIcon" data-icon-size="16"></span></div>
+        <div class="window-btn" title="Maximize Window"><span data-icon="MaximizeIcon" data-icon-size="16"></span></div>
+        <div class="window-btn" title="Close Window"><span data-icon="CrossIcon" data-icon-size="16"></span></div>
+      </div>
+    </div>
+
+    <!-- Window Body: Left Rail + Main Pane -->
+    <div class="window-body">
+      
+      <!-- Left Rail Sidebar (228px) -->
+      <aside class="left-rail">
+        <button class="back-btn btn-secondary" onclick="showToast('Navigating back to active session...')">
+          <span data-icon="ArrowLeftIcon" data-icon-size="16"></span>
+          <span>Back to Chat</span>
+        </button>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <span>App Preferences</span>
+          </div>
+          
+  <button class="nav-item active" data-screen="general" onclick="switchScreen('general')">
+    <span data-icon="SettingIcon" data-icon-size="18"></span>
+    <span>General</span>
+  </button>
+
+  <button class="nav-item " data-screen="appearance" onclick="switchScreen('appearance')">
+    <span data-icon="PaintBrushIcon" data-icon-size="18"></span>
+    <span>Appearance</span>
+  </button>
+
+  <button class="nav-item " data-screen="interaction" onclick="switchScreen('interaction')">
+    <span data-icon="SwitchIcon" data-icon-size="18"></span>
+    <span>Interaction & Keys</span>
+  </button>
+
+  <button class="nav-item " data-screen="sessions" onclick="switchScreen('sessions')">
+    <span data-icon="DrawerIcon" data-icon-size="18"></span>
+    <span>Sessions & Storage</span>
+  </button>
+
+  <button class="nav-item " data-screen="connection" onclick="switchScreen('connection')">
+    <span data-icon="SignalIcon" data-icon-size="18"></span>
+    <span>Connection</span>
+  </button>
+
+  <button class="nav-item " data-screen="about" onclick="switchScreen('about')">
+    <span data-icon="InfoIcon" data-icon-size="18"></span>
+    <span>About</span>
+  </button>
+
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <span>omp Agent</span>
+            <span class="omp-chip">omp</span>
+          </div>
+          
+  <button class="nav-item" data-screen="model" onclick="switchScreen('model')">
+    <span data-icon="ChipIcon" data-icon-size="18"></span>
+    <span>Model & Reasoning</span>
+  </button>
+
+  <button class="nav-item" data-screen="providers" onclick="switchScreen('providers')">
+    <span data-icon="ServerIcon" data-icon-size="18"></span>
+    <span>Providers & Auth</span>
+  </button>
+
+  <button class="nav-item" data-screen="tools" onclick="switchScreen('tools')">
+    <span data-icon="ShieldIcon" data-icon-size="18"></span>
+    <span>Tools & Permissions</span>
+  </button>
+
+  <button class="nav-item" data-screen="context" onclick="switchScreen('context')">
+    <span data-icon="LayerIcon" data-icon-size="18"></span>
+    <span>Context & Compaction</span>
+  </button>
+
+  <button class="nav-item" data-screen="files" onclick="switchScreen('files')">
+    <span data-icon="FileCodeIcon" data-icon-size="18"></span>
+    <span>Files & Editing</span>
+  </button>
+
+  <button class="nav-item" data-screen="shell" onclick="switchScreen('shell')">
+    <span data-icon="ChecklistIcon" data-icon-size="18"></span>
+    <span>Shell & Tasks</span>
+  </button>
+
+  <button class="nav-item" data-screen="memory" onclick="switchScreen('memory')">
+    <span data-icon="BulbIcon" data-icon-size="18"></span>
+    <span>Memory</span>
+  </button>
+
+  <button class="nav-item" data-screen="advanced" onclick="switchScreen('advanced')">
+    <span data-icon="CautionIcon" data-icon-size="18"></span>
+    <span>Advanced (raw config)</span>
+  </button>
+
+        </div>
+      </aside>
+
+      <!-- Main Pane -->
+      <main class="main-pane">
+        
+        <!-- Main Pane Header -->
+        <header class="main-header">
+          <div class="header-title-area">
+            <h1 class="header-title" id="main-header-title">
+              <span data-icon="SettingIcon" data-icon-size="24"></span>
+              <span>General Preferences</span>
+            </h1>
+            <p class="header-desc" id="main-header-desc">
+              Desktop shell language, UI scaling, and code presentation
+            </p>
+          </div>
+
+          <div class="header-actions">
+            <wired-search-input id="settings-search" placeholder="Search 527 keys..."></wired-search-input>
+            <div class="badge-chip">
+              <span data-icon="GlobeIcon" data-icon-size="15"></span>
+              <span>Scope: Global</span>
+            </div>
+            <div class="badge-chip">
+              <span data-icon="TagIcon" data-icon-size="15"></span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content Scroll Area with all 14 screens -->
+        <div class="main-content-scroll">
+          <!-- Search Results Banner (Hidden by default) -->
+          <div id="search-banner" class="search-banner" style="display:none;"></div>
+
+          
+  
+    <div class="screen active" id="screen-general">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="GlobeIcon" data-icon-size="18"></span> Interface & Localization</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">App Preferences</span>
+        </div>
+        
+    <div class="setting-row" data-key="app.locale" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Application Language</span>
+          <span class="setting-key-tag">app.locale</span>
+          
+        </div>
+        <p class="setting-desc">Display language for desktop shell window chrome, menus, and system prompts.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-app-locale" selected="en">
+              <wired-item value="en">English (US)</wired-item>
+              <wired-item value="id">Bahasa Indonesia</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="app.theme" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Desktop Shell Theme</span>
+          <span class="setting-key-tag">app.theme</span>
+          
+        </div>
+        <p class="setting-desc">Outer window framing and panel surface color palette.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-app-theme" selected="system">
+              <wired-item value="system">System (Auto)</wired-item>
+              <wired-item value="light">Light Mode</wired-item>
+              <wired-item value="dark">Dark Mode</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="app.uiFontSize" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">User Interface Scale</span>
+          <span class="setting-key-tag">app.uiFontSize</span>
+          
+        </div>
+        <p class="setting-desc">Base typography font size for application text, sidebar, and headers.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:12px;">
+              <wired-slider id="ctrl-app-fontsize" min="12" max="20" value="16"></wired-slider>
+              <span id="val-fontsize" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:bold;min-width:38px;">16px</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileCodeIcon" data-icon-size="18"></span> Code Presentation & Syntax Highlighting</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Syntax Styling</span>
+        </div>
+        
+    <div class="setting-row" data-key="app.codeTheme" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Editor Syntax Highlighting</span>
+          <span class="setting-key-tag">app.codeTheme</span>
+          
+        </div>
+        <p class="setting-desc">Color palette used for rendered code blocks, diffs, and tool payloads.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-app-codetheme" selected="dracula">
+              <wired-item value="github-dark">GitHub Dark</wired-item>
+              <wired-item value="dracula">Dracula Official</wired-item>
+              <wired-item value="nord">Nord Frost</wired-item>
+              <wired-item value="tokyo-night">Tokyo Night</wired-item>
+              <wired-item value="monokai">Monokai Pro</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="app.showLineNumbers" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Show Line Numbers</span>
+          <span class="setting-key-tag">app.showLineNumbers</span>
+          
+        </div>
+        <p class="setting-desc">Render line numbers in markdown code blocks and file viewer.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-toggle id="ctrl-app-linenumbers" checked></wired-toggle>
+          
+        
+      </div>
+    </div>
+  
+        <div style="padding:14px 18px;background:#fafafa;border-top:1px dashed #ddd;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:13px;text-transform:uppercase;color:#6b6b6b;font-weight:bold;letter-spacing:0.5px;">Live Preview</span>
+            <span id="preview-theme-tag" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#555;background:#eee;padding:1px 6px;border-radius:4px;">dracula</span>
+          </div>
+          <pre id="code-preview" style="margin:0;padding:12px 16px;background:#ffffff;border:2px solid #333;border-radius:255px 15px 225px 15px / 15px 225px 15px 255px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.5;overflow-x:auto;"><code><span class="ln" style="color:#6b6b6b;margin-right:12px;user-select:none;">1</span><span style="color:#111;font-weight:bold;">const</span> agent = <span style="color:#2b6cb0;">"omp"</span>;
+<span class="ln" style="color:#6b6b6b;margin-right:12px;user-select:none;">2</span><span style="color:#111;font-weight:bold;">async function</span> run() {
+<span class="ln" style="color:#6b6b6b;margin-right:12px;user-select:none;">3</span>  <span style="color:#111;font-weight:bold;">return</span> <span style="color:#444;">true</span>;
+<span class="ln" style="color:#6b6b6b;margin-right:12px;user-select:none;">4</span>}</code></pre>
+        </div>
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-appearance">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="PaintBrushIcon" data-icon-size="18"></span> Terminal Color Schemes</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">CLI Palettes</span>
+        </div>
+        
+    <div class="setting-row" data-key="theme.dark" data-default="dark-tokyo-night">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Terminal Dark Theme</span>
+          <span class="setting-key-tag">theme.dark</span>
+          <span class="badge-modified" id="mod-badge-theme_dark"><span class="badge-dot"></span> Modified (Default: dark-tokyo-night)</span>
+        </div>
+        <p class="setting-desc">Color palette used for dark mode terminal sessions. Over 10 palettes supported.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-theme-dark" selected="dark-nord">
+              <wired-item value="dark-nord">dark-nord (Nordic Frost)</wired-item>
+              <wired-item value="dark-dracula">dark-dracula (Gothic)</wired-item>
+              <wired-item value="dark-tokyo-night">dark-tokyo-night (Default)</wired-item>
+              <wired-item value="dark-gruvbox">dark-gruvbox (Warm Earth)</wired-item>
+              <wired-item value="dark-monokai">dark-monokai (Classic)</wired-item>
+              <wired-item value="dark-catppuccin">dark-catppuccin (Mocha)</wired-item>
+              <wired-item value="dark-one">dark-one (Atom One Dark)</wired-item>
+              <wired-item value="dark-rose-pine">dark-rose-pine (Minimal)</wired-item>
+              <wired-item value="dark-solarized">dark-solarized (Teal-Yellow)</wired-item>
+              <wired-item value="dark-synthwave">dark-synthwave (Neon 80s)</wired-item>
+            </wired-combo>
+          
+        <button class="btn-reset" id="reset-btn-theme_dark" title="Reset theme.dark to default (dark-tokyo-night)" onclick="resetSingleSetting('theme.dark')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="theme.light" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Terminal Light Theme</span>
+          <span class="setting-key-tag">theme.light</span>
+          
+        </div>
+        <p class="setting-desc">Color palette used for light mode terminal sessions.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-theme-light" selected="light-github">
+              <wired-item value="light-github">light-github (Default)</wired-item>
+              <wired-item value="light-one">light-one</wired-item>
+              <wired-item value="light-catppuccin">light-catppuccin (Latte)</wired-item>
+              <wired-item value="light-solarized">light-solarized</wired-item>
+              <wired-item value="light-paper">light-paper (Newsprint)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="symbolPreset" data-default="unicode">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Glyph & Icon Preset</span>
+          <span class="setting-key-tag">symbolPreset</span>
+          <span class="badge-modified" id="mod-badge-symbolPreset"><span class="badge-dot"></span> Modified (Default: unicode)</span>
+        </div>
+        <p class="setting-desc">Symbols used in status lines, spinner frames, tree branches, and status checks.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-symbol-preset" selected="nerd">
+              <wired-item value="unicode">unicode (Standard UTF-8)</wired-item>
+              <wired-item value="nerd">nerd (Nerd Fonts v3.x)</wired-item>
+              <wired-item value="ascii">ascii (Pure 7-bit ASCII)</wired-item>
+            </wired-combo>
+          
+        <button class="btn-reset" id="reset-btn-symbolPreset" title="Reset symbolPreset to default (unicode)" onclick="resetSingleSetting('symbolPreset')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="colorBlindMode" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">High-Contrast Accessible Palette</span>
+          <span class="setting-key-tag">colorBlindMode</span>
+          
+        </div>
+        <p class="setting-desc">Replaces red/green diff cues with accessible blue/orange color scales.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-colorblind"></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="GridIcon" data-icon-size="18"></span> Status Line & Layout</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Terminal Chrome</span>
+        </div>
+        
+    <div class="setting-row" data-key="statusLine.preset" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Status Line Format Density</span>
+          <span class="setting-key-tag">statusLine.preset</span>
+          
+        </div>
+        <p class="setting-desc">Layout density of status information on terminal bottom bar.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-status-preset" selected="default">
+              <wired-item value="default">default (Model, Branch, Context)</wired-item>
+              <wired-item value="minimal">minimal (Tokens only)</wired-item>
+              <wired-item value="compact">compact (Single line)</wired-item>
+              <wired-item value="full">full (Telemetry + Advisor)</wired-item>
+              <wired-item value="nerd">nerd (Powerline icons)</wired-item>
+              <wired-item value="ascii">ascii (7-bit ASCII)</wired-item>
+              <wired-item value="custom">custom (User template)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="statusLine.separator" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Segment Separator Glyph</span>
+          <span class="setting-key-tag">statusLine.separator</span>
+          
+        </div>
+        <p class="setting-desc">Glyphs between model, git branch, and context tokens.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-status-separator" selected="powerline">
+              <wired-item value="powerline">powerline ( Filled arrow)</wired-item>
+              <wired-item value="powerline-thin">powerline-thin ( Thin arrow)</wired-item>
+              <wired-item value="slash">slash (/ Forward slash)</wired-item>
+              <wired-item value="pipe">pipe (| Vertical bar)</wired-item>
+              <wired-item value="block">block (█ Full block)</wired-item>
+              <wired-item value="none">none (Space only)</wired-item>
+              <wired-item value="ascii">ascii (> Greater than)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="statusLine.contextLine" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Context Window Usage Gauge</span>
+          <span class="setting-key-tag">statusLine.contextLine</span>
+          
+        </div>
+        <p class="setting-desc">Visual representation of consumed context window tokens.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-status-contextline" selected="percentage">
+              <wired-item value="off">off</wired-item>
+              <wired-item value="percentage">percentage (e.g. 42%)</wired-item>
+              <wired-item value="annotated">annotated (84k / 200k)</wired-item>
+              <wired-item value="embedded">embedded (Micro bar gauge)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="composer.shape" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Prompt Input Shape</span>
+          <span class="setting-key-tag">composer.shape</span>
+          
+        </div>
+        <p class="setting-desc">Visual border framing for the user input prompt box.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-composer-shape" selected="rounded">
+              <wired-item value="rounded">rounded</wired-item>
+              <wired-item value="square">square</wired-item>
+              <wired-item value="pill">pill</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ZapIcon" data-icon-size="18"></span> Display Effects & Streaming</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Realtime Rendering</span>
+        </div>
+        
+    <div class="setting-row" data-key="display.shimmer" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Streaming Shimmer Animation</span>
+          <span class="setting-key-tag">display.shimmer</span>
+          
+        </div>
+        <p class="setting-desc">Animated pulse while awaiting model response chunks.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-display-shimmer" selected="kitt">
+              <wired-item value="classic">classic (Subtle gradient)</wired-item>
+              <wired-item value="kitt">kitt (Knight Rider sweep)</wired-item>
+              <wired-item value="disabled">disabled</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="display.showTokenUsage" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Display Token Counters</span>
+          <span class="setting-key-tag">display.showTokenUsage</span>
+          
+        </div>
+        <p class="setting-desc">Show prompt, cache read, and completion token metrics on each turn.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-display-tokenusage" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="display.showTurnTime" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Turn Duration Stopwatch</span>
+          <span class="setting-key-tag">display.showTurnTime</span>
+          
+        </div>
+        <p class="setting-desc">Show elapsed wall-clock seconds next to finished assistant steps.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-display-turntime" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="display.hideToolActivity" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Collapse Tool Execution Logs</span>
+          <span class="setting-key-tag">display.hideToolActivity</span>
+          
+        </div>
+        <p class="setting-desc">Keep intermediate tool standard output folded by default.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-display-hidetool"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="display.pinnedAgents" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Subagent Drawer Layout</span>
+          <span class="setting-key-tag">display.pinnedAgents</span>
+          
+        </div>
+        <p class="setting-desc">Docking presentation for background worker subagents.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-display-pinned" selected="collapsed">
+              <wired-item value="off">off (Hidden)</wired-item>
+              <wired-item value="collapsed">collapsed (Badge rail)</wired-item>
+              <wired-item value="full">full (Expanded dock)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="display.smoothStreaming" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Smooth Token Interpolation</span>
+          <span class="setting-key-tag">display.smoothStreaming</span>
+          
+        </div>
+        <p class="setting-desc">Smooth out bursty LLM chunk arrivals for comfortable reading.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-display-smooth" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="tui.titleSpinner" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Loading Spinner Style</span>
+          <span class="setting-key-tag">tui.titleSpinner</span>
+          
+        </div>
+        <p class="setting-desc">Animation frames used during active reasoning and tool calls.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-tui-spinner" selected="braille">
+              <wired-item value="braille">braille (⠋ ⠙ ⠹ ⠸ ⠼ ⠴)</wired-item>
+              <wired-item value="pulse">pulse (▄ ▀)</wired-item>
+              <wired-item value="dots">dots (. .. ...)</wired-item>
+              <wired-item value="line">line (- \ | /)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="tui.renderMermaid" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Render Mermaid Diagrams</span>
+          <span class="setting-key-tag">tui.renderMermaid</span>
+          
+        </div>
+        <p class="setting-desc">Format architecture diagrams as ASCII or inline graphics in chat.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-tui-mermaid" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="tui.hyperlinks" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Terminal OSC-8 Hyperlinks</span>
+          <span class="setting-key-tag">tui.hyperlinks</span>
+          
+        </div>
+        <p class="setting-desc">Emit clickable hyperlinks for file paths and web documentation URLs.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-tui-hyperlinks" selected="auto">
+              <wired-item value="off">off</wired-item>
+              <wired-item value="auto">auto (Detect terminal support)</wired-item>
+              <wired-item value="always">always</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="terminal.showImages" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Inline Image Graphics</span>
+          <span class="setting-key-tag">terminal.showImages</span>
+          
+        </div>
+        <p class="setting-desc">Display screenshots and visual diffs directly inside terminal cells.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-terminal-images" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="images.autoResize" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Auto Resize Large Graphics</span>
+          <span class="setting-key-tag">images.autoResize</span>
+          
+        </div>
+        <p class="setting-desc">Downscale screenshots exceeding terminal viewport width.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-images-autoresize" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-interaction">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="SwitchIcon" data-icon-size="18"></span> Prompt Editor & Keyboard Navigation</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Keys</span>
+        </div>
+        
+    <div class="setting-row" data-key="interaction.vimMode" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Vim Modal Keybindings</span>
+          <span class="setting-key-tag">interaction.vimMode</span>
+          
+        </div>
+        <p class="setting-desc">Enable modal navigation (Normal, Insert, Visual) in the prompt composer.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-interact-vim"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="interaction.sendOnEnter" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Submit Prompt on Enter</span>
+          <span class="setting-key-tag">interaction.sendOnEnter</span>
+          
+        </div>
+        <p class="setting-desc">Press Enter to submit prompt; Shift+Enter inserts a new line.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-interact-enter" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="interaction.confirmOnExit" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Confirm on Window Close</span>
+          <span class="setting-key-tag">interaction.confirmOnExit</span>
+          
+        </div>
+        <p class="setting-desc">Prompt for confirmation if active background subagents are still working.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-interact-exit" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="interaction.autoCopyCommit" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Auto-Copy Commit Messages</span>
+          <span class="setting-key-tag">interaction.autoCopyCommit</span>
+          
+        </div>
+        <p class="setting-desc">Automatically copy generated git commit messages to OS clipboard.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-interact-commit" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="VolumeUpIcon" data-icon-size="18"></span> Audio Feedback & Stream Timing</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Timing</span>
+        </div>
+        
+    <div class="setting-row" data-key="interaction.soundEffects" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Terminal Audio Chimes</span>
+          <span class="setting-key-tag">interaction.soundEffects</span>
+          
+        </div>
+        <p class="setting-desc">Play a subtle notification sound when a multi-step task settles.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-interact-sound"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="interaction.streamDelayMs" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Token Stream Pacing Delay</span>
+          <span class="setting-key-tag">interaction.streamDelayMs</span>
+          
+        </div>
+        <p class="setting-desc">Artificial pause in milliseconds between token packets for demonstration.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:12px;">
+              <wired-slider id="ctrl-interact-delay" min="0" max="100" value="0"></wired-slider>
+              <span id="val-delay" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:bold;min-width:44px;">0ms</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-sessions">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="DrawerIcon" data-icon-size="18"></span> Session Storage Root & Isolation Profiles</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Storage Paths</span>
+        </div>
+        
+    <div class="setting-row" data-key="session.path" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Session Journal Directory</span>
+          <span class="setting-key-tag">session.path</span>
+          
+        </div>
+        <p class="setting-desc">Local file path where conversation logs and rollbacks are persisted.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#eeeeee;padding:4px 8px;border:1px solid #ccc;border-radius:4px;max-width:280px;overflow:hidden;text-overflow:ellipsis;display:inline-block;" title="~/.omp/agent/sessions/--D--playground-omp-desktop--/">~/.omp/agent/sessions/--D--.../</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="profile.active" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Active Configuration Profile</span>
+          <span class="setting-key-tag">profile.active</span>
+          
+        </div>
+        <p class="setting-desc">Profiles isolate settings, API keys, and session history per context.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-profile-active" selected="default">
+              <wired-item value="default">default (Global ~/.omp/)</wired-item>
+              <wired-item value="work-enterprise">work-enterprise (SAML)</wired-item>
+              <wired-item value="personal-oss">personal-oss (Local keys)</wired-item>
+              <wired-item value="sandboxed">sandboxed (Read-only)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="CalendarIcon" data-icon-size="18"></span> Retention & Storage Garbage Collection</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Disk Retention</span>
+        </div>
+        
+    <div class="setting-row" data-key="gc.coldArchiveAfterDays" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Cold Archive Age Threshold</span>
+          <span class="setting-key-tag">gc.coldArchiveAfterDays</span>
+          
+        </div>
+        <p class="setting-desc">Automatically compress and cold-archive session files older than N days.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:6px;">
+              <wired-input id="ctrl-gc-days" type="number" value="30" style="width:70px;"></wired-input>
+              <span style="font-size:15px;">days</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="gc.retainNewestGlobal" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Retain Newest Sessions Globally</span>
+          <span class="setting-key-tag">gc.retainNewestGlobal</span>
+          
+        </div>
+        <p class="setting-desc">Maximum uncompressed session folders maintained across all projects.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-gc-global" type="number" value="20" style="width:70px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="gc.retainNewestPerCwd" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Retain Newest Sessions per CWD</span>
+          <span class="setting-key-tag">gc.retainNewestPerCwd</span>
+          
+        </div>
+        <p class="setting-desc">Number of active uncompressed session journals kept per project folder.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-gc-cwd" type="number" value="10" style="width:70px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Run Storage Garbage Collection</span>
+            </div>
+            <p class="setting-desc">Prune expired session checkpoints, clean orphaned git worktrees, and vacuum sqlite indexes.</p>
+          </div>
+          <div class="setting-control" style="flex-direction:column;align-items:flex-end;gap:4px;">
+            <button class="btn-secondary btn-sm" onclick="runStorageGC()"><span data-icon="RotateIcon" data-icon-size="14"></span> Run Storage GC Now</button>
+            <span id="gc-last-run" style="font-size:13px;color:#6b6b6b;">Last run: Today, 03:14 AM (Freed 412 MB)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="SafeIcon" data-icon-size="18"></span> Checkpoints & Collaboration Sharing</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Safety</span>
+        </div>
+        
+    <div class="setting-row" data-key="checkpoint.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">File Edit Undo Checkpoints</span>
+          <span class="setting-key-tag">checkpoint.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Record git shadow commit before executing file modifications.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-checkpoint" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="share.redactSecrets" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Redact Secrets on Export</span>
+          <span class="setting-key-tag">share.redactSecrets</span>
+          
+        </div>
+        <p class="setting-desc">Automatically mask API keys, auth tokens, and environment passwords when exporting.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-share-redact" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="collab.autoStart" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Peer Collaboration Mode</span>
+          <span class="setting-key-tag">collab.autoStart</span>
+          
+        </div>
+        <p class="setting-desc">Allow peers to join active session via encrypted peer-to-peer WebRTC link.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-collab-mode" selected="off">
+              <wired-item value="off">off (Disabled)</wired-item>
+              <wired-item value="view">view (Read-only observer)</wired-item>
+              <wired-item value="control">control (Interactive co-pilot)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-connection">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="SignalIcon" data-icon-size="18"></span> Wails Desktop RPC Bridge</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Active IPC</span>
+        </div>
+        
+    <div class="setting-row" data-key="status" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Agent Daemon Status</span>
+          <span class="setting-key-tag">status</span>
+          
+        </div>
+        <p class="setting-desc">Connection state between desktop UI and background omp CLI process.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="width:10px;height:10px;background:#333333;border-radius:50%;display:inline-block;"></span>
+              <span style="font-weight:bold;font-size:16px;">Ready · Connected (PID 14820)</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="sessionId" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Active Session Identifier</span>
+          <span class="setting-key-tag">sessionId</span>
+          
+        </div>
+        <p class="setting-desc">Unique identifier for the current active conversation journal.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#eeeeee;padding:3px 8px;border:1px solid #ccc;border-radius:4px;">sess_8f29ab4301cde911</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="sessionFile" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Active Session Journal File</span>
+          <span class="setting-key-tag">sessionFile</span>
+          
+        </div>
+        <p class="setting-desc">Append-only stream file written by omp agent subprocess.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#eeeeee;padding:3px 8px;border:1px solid #ccc;border-radius:4px;max-width:260px;overflow:hidden;text-overflow:ellipsis;display:inline-block;" title="sess_8f29ab4301cde911.jsonl">sess_8f29ab43...jsonl</span>
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Terminate Active Agent Daemons</span>
+            </div>
+            <p class="setting-desc">Send SIGTERM to running omp processes and abort unfinished background subagents.</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn-secondary btn-sm" onclick="stopAllSessions()"><span data-icon="CrossIcon" data-icon-size="14"></span> Stop All Sessions</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileTextIcon" data-icon-size="18"></span> RPC Wire Protocol Specifications</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Protocol Info</span>
+        </div>
+        
+    <div class="setting-row" data-key="protocol" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Wire Serialization Format</span>
+          <span class="setting-key-tag">protocol</span>
+          
+        </div>
+        <p class="setting-desc">Newline-delimited JSON frame exchange negotiated over stdio.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">JSON lines (wire v1 → v2 negotiable)</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="events" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Registered Wails Runtime Events</span>
+          <span class="setting-key-tag">events</span>
+          
+        </div>
+        <p class="setting-desc">IPC events emitted by Go runtime to Vite frontend client.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">stdout → omp:frame · exit → omp:rpc-exit</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="transport" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Subprocess Transport Channel</span>
+          <span class="setting-key-tag">transport</span>
+          
+        </div>
+        <p class="setting-desc">Operating system pipe managed by Wails Go backend.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">OS Stdio Pipe (exec.Command)</span>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-about">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="InfoIcon" data-icon-size="18"></span> System Architecture & Engine Version</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Build Metadata</span>
+        </div>
+        
+    <div class="setting-row" data-key="desktop.version" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">OMP Desktop Application</span>
+          <span class="setting-key-tag">desktop.version</span>
+          
+        </div>
+        <p class="setting-desc">Cross-platform desktop graphical client for omp coding agent.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;">v0.1.0 (Alpha Build)</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="omp.version" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">omp Autonomous CLI Engine</span>
+          <span class="setting-key-tag">omp.version</span>
+          
+        </div>
+        <p class="setting-desc">Underlying agent supervisor and tool executor.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;">omp/18.6.1</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="omp.command" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Daemon Execution Target</span>
+          <span class="setting-key-tag">omp.command</span>
+          
+        </div>
+        <p class="setting-desc">Command line invoked by Wails supervisor upon launch.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#eee;padding:3px 7px;border-radius:4px;">omp --mode rpc</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="runtime" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Application Runtime Stack</span>
+          <span class="setting-key-tag">runtime</span>
+          
+        </div>
+        <p class="setting-desc">Framework components and web view host container.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-size:15px;color:#333;">Wails v2 (Go 1.25) · React 19 · TypeScript · Vite</span>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="platform" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Target Host Platform</span>
+          <span class="setting-key-tag">platform</span>
+          
+        </div>
+        <p class="setting-desc">Operating system architecture and embedded browser engine.</p>
+      </div>
+      <div class="setting-control">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">windows / amd64 (WebView2 131.0)</span>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="SyncIcon" data-icon-size="18"></span> Distribution Channel & Updates</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Updates</span>
+        </div>
+        
+    <div class="setting-row" data-key="update.channel" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Software Release Channel</span>
+          <span class="setting-key-tag">update.channel</span>
+          
+        </div>
+        <p class="setting-desc">Check for application binaries on stable or bleeding-edge canary.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-update-channel" selected="stable">
+              <wired-item value="stable">stable (Verified releases)</wired-item>
+              <wired-item value="canary">canary (Nightly builds)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Check for Application Updates</span>
+            </div>
+            <p class="setting-desc">Query GitHub releases for updated installers and changelogs.</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn-secondary btn-sm" onclick="checkForUpdates()"><span data-icon="SyncIcon" data-icon-size="14"></span> Check for Updates Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="GlobeIcon" data-icon-size="18"></span> Project Links & Documentation</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Resources</span>
+        </div>
+        <div style="padding:16px 20px;display:flex;gap:24px;flex-wrap:wrap;">
+          <a class="link-primary" href="#">Documentation & Guides</a>
+          <a class="link-primary" href="#">GitHub Repository (omp-desktop)</a>
+          <a class="link-primary" href="#">Issue Tracker & Bug Reports</a>
+          <a class="link-primary" href="#">Changelog & Release Notes</a>
+          <a class="link-primary" href="#">agilek Wireframer Styleguide</a>
+        </div>
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-model">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ChipIcon" data-icon-size="18"></span> Specialized Model Roles Table (15 Roles)</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">CLI Config: modelRoles</span>
+        </div>
+        <div style="overflow-x:auto;padding:0 4px;">
+          <table class="roles-table">
+            <thead>
+              <tr>
+                <th style="width:35%;">Role / Specialty</th>
+                <th style="width:38%;">Assigned Model ID</th>
+                <th style="width:14%;">Effort</th>
+                <th style="width:13%;text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+    <tr id="role-row-default">
+      <td>
+        <div class="role-name">default</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Main reasoning & turn orchestrator</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-default">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-default">:inherit</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('default', 'ihub/cb/deepseek-v4.1-flash', 'inherit')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-smol">
+      <td>
+        <div class="role-name">smol</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Fast lightweight codebase recon</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-smol">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-smol">:low</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('smol', 'ihub/cb/deepseek-v4.1-flash', 'low')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-slow">
+      <td>
+        <div class="role-name">slow</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Deep architectural decisions & verification</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-slow">ihub/cb/gpt-6-luna</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-slow">:max</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('slow', 'ihub/cb/gpt-6-luna', 'max')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-plan">
+      <td>
+        <div class="role-name">plan</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">High-level goal breakdown & work graphs</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-plan">ihub/gpt-6-luna</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-plan">:max</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('plan', 'ihub/gpt-6-luna', 'max')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-vision">
+      <td>
+        <div class="role-name">vision</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Screenshot, UI wireframe & visual analysis</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-vision">ihub/ali/qwen3.8-omni-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-vision">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('vision', 'ihub/ali/qwen3.8-omni-flash', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-tiny">
+      <td>
+        <div class="role-name">tiny</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Micro summarization & formatting tasks</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-tiny">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-tiny">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('tiny', 'ihub/cb/deepseek-v4.1-flash', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-task">
+      <td>
+        <div class="role-name">task</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Autonomous background specialist subagents</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-task">ihub/ali/qwen3.8-omni-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-task">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('task', 'ihub/ali/qwen3.8-omni-flash', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-commit">
+      <td>
+        <div class="role-name">commit</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Conventional git commit message generation</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-commit">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-commit">:off</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('commit', 'ihub/cb/deepseek-v4.1-flash', 'off')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-designer">
+      <td>
+        <div class="role-name">designer</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">UI/UX design, aesthetic hierarchy & layouts</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-designer">gverse/ag/gemini-3.8-flash-high</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-designer">:high</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('designer', 'gverse/ag/gemini-3.8-flash-high', 'high')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-EXPLORER">
+      <td>
+        <div class="role-name">EXPLORER</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Fast symbol map discovery & code search</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-EXPLORER">ihub/ali/qwen3.8-omni-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-EXPLORER">:minimal</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('EXPLORER', 'ihub/ali/qwen3.8-omni-flash', 'minimal')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-LIBRARIAN">
+      <td>
+        <div class="role-name">LIBRARIAN</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">External documentation & library research</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-LIBRARIAN">ihub/ali/qwen3.8-omni-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-LIBRARIAN">:low</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('LIBRARIAN', 'ihub/ali/qwen3.8-omni-flash', 'low')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-advisor">
+      <td>
+        <div class="role-name">advisor</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Real-time strategic supervisor & guardrail</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-advisor">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-advisor">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('advisor', 'ihub/cb/deepseek-v4.1-flash', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-web">
+      <td>
+        <div class="role-name">web</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Web retrieval search query rewriter</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-web">web/exa</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-web">—</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('web', 'web/exa', 'none')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-memory">
+      <td>
+        <div class="role-name">memory</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Long-term preference & concept indexing</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-memory">ihub/cb/deepseek-v4.1-flash</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-memory">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('memory', 'ihub/cb/deepseek-v4.1-flash', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+    <tr id="role-row-judge">
+      <td>
+        <div class="role-name">judge</div>
+        <div style="font-size:13.5px;color:#666;line-height:1.2;">Verification criteria & test evaluation</div>
+      </td>
+      <td>
+        <span class="role-model" id="role-model-judge">ihub/gpt-6-luna</span>
+      </td>
+      <td>
+        <span class="role-effort" id="role-effort-judge">:auto</span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn-secondary btn-sm" onclick="openModelChooser('judge', 'ihub/gpt-6-luna', 'auto')">
+          <span data-icon="PencilIcon" data-icon-size="13"></span> Change
+        </button>
+      </td>
+    </tr>
+  
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="BulbIcon" data-icon-size="18"></span> Reasoning Effort & Thinking Budgets</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">CoT Budgets</span>
+        </div>
+        
+    <div class="setting-row" data-key="defaultThinkingLevel" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Default Reasoning Effort Level</span>
+          <span class="setting-key-tag">defaultThinkingLevel</span>
+          
+        </div>
+        <p class="setting-desc">Thinking token budget assigned to models supporting extended thought (minimal to max).</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-radio-group id="ctrl-thinking-level" selected="auto">
+              <wired-radio name="minimal">minimal (1k tokens)</wired-radio>
+              <wired-radio name="low">low (2k tokens)</wired-radio>
+              <wired-radio name="medium">medium (8k tokens)</wired-radio>
+              <wired-radio name="high">high (16k tokens)</wired-radio>
+              <wired-radio name="xhigh">xhigh (32k tokens)</wired-radio>
+              <wired-radio name="max">max (32k tokens)</wired-radio>
+              <wired-radio name="auto">auto (Provider dynamic)</wired-radio>
+            </wired-radio-group>
+          
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Thinking Budgets by Level</span>
+              <span class="setting-key-tag">thinkingBudgets.*</span>
+            </div>
+            <p class="setting-desc">Token limit ceilings allocated for chain-of-thought per tier.</p>
+          </div>
+          <div class="setting-control" style="font-family:'JetBrains Mono',monospace;font-size:13px;gap:6px;flex-wrap:wrap;max-width:320px;">
+            <span style="background:#eee;padding:2px 6px;border-radius:4px;border:1px solid #ccc;">min: 1,024</span>
+            <span style="background:#eee;padding:2px 6px;border-radius:4px;border:1px solid #ccc;">low: 2,048</span>
+            <span style="background:#eee;padding:2px 6px;border-radius:4px;border:1px solid #ccc;">med: 8,192</span>
+            <span style="background:#eee;padding:2px 6px;border-radius:4px;border:1px solid #ccc;">high: 16,384</span>
+            <span style="background:#eee;padding:2px 6px;border-radius:4px;border:1px solid #ccc;">max: 32,768</span>
+          </div>
+        </div>
+        
+    <div class="setting-row" data-key="hideThinkingBlock" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Collapse Extended Thinking Blocks</span>
+          <span class="setting-key-tag">hideThinkingBlock</span>
+          
+        </div>
+        <p class="setting-desc">Fold chain-of-thought tokens behind an expandable details accordion.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-hide-thinking" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="RulerIcon" data-icon-size="18"></span> Sampling Parameters & Scoping</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Hyperparameters</span>
+        </div>
+        
+    <div class="setting-row" data-key="temperature" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Generation Temperature</span>
+          <span class="setting-key-tag">temperature</span>
+          <span class="badge-sentinel"><span data-icon="RulerIcon" data-icon-size="12"></span> Sentinel: -1 (Auto / Provider Default)</span>
+        </div>
+        <p class="setting-desc">Sampling randomness. Currently set to -1 (Auto: defer to provider default).</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:10px;">
+              <wired-slider id="ctrl-temperature" min="-1" max="2" value="-1" step="0.1"></wired-slider>
+              <span id="val-temp" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;min-width:65px;">-1 (Auto)</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="topP" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Top-P Nucleus Sampling</span>
+          <span class="setting-key-tag">topP</span>
+          <span class="badge-sentinel"><span data-icon="RulerIcon" data-icon-size="12"></span> Sentinel: -1 (Auto / Provider Default)</span>
+        </div>
+        <p class="setting-desc">Cumulative probability mass. Currently set to -1 (Auto: defer to provider default).</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:10px;">
+              <wired-slider id="ctrl-topP" min="-1" max="1" value="-1" step="0.05"></wired-slider>
+              <span id="val-topp" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;min-width:65px;">-1 (Auto)</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="modelRoleStorage" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Model Role Configuration Scope</span>
+          <span class="setting-key-tag">modelRoleStorage</span>
+          
+        </div>
+        <p class="setting-desc">Whether role bindings persist globally or inside .omp/project.yml.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-role-storage" selected="global">
+              <wired-item value="global">global (~/.omp/agent/config.yml)</wired-item>
+              <wired-item value="project">project (.omp/project.yml)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ShieldIcon" data-icon-size="18"></span> Fault Tolerance & Strategic Advisor</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Supervision</span>
+        </div>
+        
+    <div class="setting-row" data-key="retry.maxRetries" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Max Request Retries</span>
+          <span class="setting-key-tag">retry.maxRetries</span>
+          
+        </div>
+        <p class="setting-desc">Maximum retry attempts on 429 rate limit or 503 transient gateway errors.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-retry-max" type="number" value="10" style="width:70px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="retry.modelFallback" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Automatic Model Fallback</span>
+          <span class="setting-key-tag">retry.modelFallback</span>
+          
+        </div>
+        <p class="setting-desc">Automatically fallback to secondary model chain on quota exhaustion.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-retry-fallback" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="advisor.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Real-Time Strategic Advisor Model</span>
+          <span class="setting-key-tag">advisor.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Second-model supervisor inspects agent execution and flags risky actions.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-advisor-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="advisor.reviewMode" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Advisor Review Cadence</span>
+          <span class="setting-key-tag">advisor.reviewMode</span>
+          
+        </div>
+        <p class="setting-desc">Frequency of advisor review passes during conversation flow.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-advisor-mode" selected="turn">
+              <wired-item value="turn">turn (Every user turn)</wired-item>
+              <wired-item value="agent-end">agent-end (On subagent finish)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-providers">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ServerIcon" data-icon-size="18"></span> Configured LLM & Search Gateways</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Active Gateways</span>
+        </div>
+        <div style="padding:10px 18px 4px;">
+          <table class="roles-table" style="margin-bottom:12px;">
+            <thead>
+              <tr>
+                <th style="width:28%;">Provider Gateway</th>
+                <th style="width:28%;">Connection Status</th>
+                <th style="width:26%;">Models / Quota</th>
+                <th style="width:18%;text-align:right;">Diagnostics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ihub</strong> <span style="font-size:13px;color:#666;">(Enterprise Gateway)</span></td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge-dot" style="background:#333333;"></span> Connected · 42ms</span></td>
+                <td>14 models available · Active</td>
+                <td style="text-align:right;"><button class="btn-secondary btn-sm" onclick="openProviderDialog('ihub')"><span data-icon="TickIcon" data-icon-size="13"></span> Test Ping</button></td>
+              </tr>
+              <tr>
+                <td><strong>claude-plugins</strong> <span style="font-size:13px;color:#666;">(Official Plugins)</span></td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge-dot" style="background:#333333;"></span> Connected</span></td>
+                <td>Official MCP tool suites</td>
+                <td style="text-align:right;"><button class="btn-secondary btn-sm" onclick="openProviderDialog('claude-plugins')"><span data-icon="SettingIcon" data-icon-size="13"></span> Config</button></td>
+              </tr>
+              <tr>
+                <td><strong>web/exa</strong> <span style="font-size:13px;color:#666;">(Neural Search)</span></td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge-dot" style="background:#333333;"></span> Connected · 118ms</span></td>
+                <td>Neural retrieval online</td>
+                <td style="text-align:right;"><button class="btn-secondary btn-sm" onclick="openProviderDialog('web/exa')"><span data-icon="TickIcon" data-icon-size="13"></span> Test Ping</button></td>
+              </tr>
+              <tr>
+                <td><strong>ollama</strong> <span style="font-size:13px;color:#666;">(Local Engine)</span></td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge-dot" style="background:#333333;"></span> Ready · http://localhost:11434</span></td>
+                <td>4 local models loaded</td>
+                <td style="text-align:right;"><button class="btn-secondary btn-sm" onclick="openProviderDialog('ollama')"><span data-icon="TickIcon" data-icon-size="13"></span> Test Ping</button></td>
+              </tr>
+              <tr>
+                <td><strong>lm-studio</strong> <span style="font-size:13px;color:#666;">(Local Engine)</span></td>
+                <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="badge-dot" style="background:#aaa;"></span> Offline · http://localhost:1234</span></td>
+                <td>Port closed / Not running</td>
+                <td style="text-align:right;"><button class="btn-secondary btn-sm" onclick="openProviderDialog('lm-studio')">Connect</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="padding-bottom:12px;text-align:right;">
+            <button class="btn-secondary btn-sm" onclick="openProviderDialog('custom')"><span data-icon="ServerIcon" data-icon-size="14"></span> + Add Custom Gateway</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="LockIcon" data-icon-size="18"></span> API Keys & Credentials (Redacted Secrets)</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Keyring</span>
+        </div>
+        
+    <div class="setting-row" data-key="ihub.apiKey" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">iHub Gateway Bearer Token</span>
+          <span class="setting-key-tag">ihub.apiKey</span>
+          <span class="badge-secret"><span data-icon="LockIcon" data-icon-size="12"></span> Secret</span>
+        </div>
+        <p class="setting-desc">Primary authentication token stored in encrypted system keychain. Redacted for security. Run omp config get ihub.apiKey in CLI to view unmasked value.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:8px;">
+              <wired-input id="ctrl-key-ihub" type="password" value="••••••••••••••••" disabled style="width:180px;"></wired-input>
+              <button class="btn-secondary btn-sm" onclick="toggleRevealKey('ctrl-key-ihub')"><span data-icon="LockIcon" data-icon-size="14"></span> Reveal</button>
+              <button class="btn-secondary btn-sm" onclick="openProviderDialog('ihub')"><span data-icon="TickIcon" data-icon-size="14"></span> Test</button>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="exa.apiKey" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Exa Neural Search Key</span>
+          <span class="setting-key-tag">exa.apiKey</span>
+          <span class="badge-secret"><span data-icon="LockIcon" data-icon-size="12"></span> Secret</span>
+        </div>
+        <p class="setting-desc">Authorization token for real-time semantic web retrieval.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:8px;">
+              <wired-input id="ctrl-key-exa" type="password" value="••••••••••••••••" disabled style="width:180px;"></wired-input>
+              <button class="btn-secondary btn-sm" onclick="toggleRevealKey('ctrl-key-exa')"><span data-icon="LockIcon" data-icon-size="14"></span> Reveal</button>
+              <button class="btn-secondary btn-sm" onclick="openProviderDialog('web/exa')"><span data-icon="TickIcon" data-icon-size="14"></span> Test</button>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.apiKey" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Mnemopi Vector Memory Token</span>
+          <span class="setting-key-tag">mnemopi.apiKey</span>
+          <span class="badge-secret"><span data-icon="LockIcon" data-icon-size="12"></span> Secret</span>
+        </div>
+        <p class="setting-desc">API token used for generating neural memory embeddings.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:8px;">
+              <wired-input id="ctrl-key-mnemopi" type="password" value="••••••••••••••••" disabled style="width:180px;"></wired-input>
+              <button class="btn-secondary btn-sm" onclick="toggleRevealKey('ctrl-key-mnemopi')"><span data-icon="LockIcon" data-icon-size="14"></span> Reveal</button>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ClockIcon" data-icon-size="18"></span> Concurrency, Caching & Web Scraper Backends</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Rate Limits</span>
+        </div>
+        
+    <div class="setting-row" data-key="providers.maxInFlightRequests" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Max Simultaneous In-Flight HTTP Requests</span>
+          <span class="setting-key-tag">providers.maxInFlightRequests</span>
+          
+        </div>
+        <p class="setting-desc">Upper ceiling on parallel provider queries to prevent rate-limit tripwires.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-prov-inflight" type="number" value="16" style="width:70px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="providers.fetch" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Web Scraper Content Backend</span>
+          <span class="setting-key-tag">providers.fetch</span>
+          
+        </div>
+        <p class="setting-desc">HTML fetching engine used to extract clean markdown from URLs.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-prov-fetch" selected="auto">
+              <wired-item value="auto">auto (Heuristic selection)</wired-item>
+              <wired-item value="native">native (Built-in fetch)</wired-item>
+              <wired-item value="trafilatura">trafilatura (Python readability)</wired-item>
+              <wired-item value="lynx">lynx (Text terminal dump)</wired-item>
+              <wired-item value="parallel">parallel (Multi-worker race)</wired-item>
+              <wired-item value="firecrawl">firecrawl (Headless JS engine)</wired-item>
+              <wired-item value="jina">jina (Reader API proxy)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="providers.cacheRetention" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Prompt Cache Retention Policy</span>
+          <span class="setting-key-tag">providers.cacheRetention</span>
+          
+        </div>
+        <p class="setting-desc">Hint passed to upstream providers regarding prompt cache lifetime.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-prov-cache" selected="auto">
+              <wired-item value="auto">auto (Default provider TTL)</wired-item>
+              <wired-item value="short">short (5 minutes)</wired-item>
+              <wired-item value="long">long (1 hour retention)</wired-item>
+              <wired-item value="none">none (Bypass server cache)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="exa.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Exa Neural Search Integration</span>
+          <span class="setting-key-tag">exa.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Enable neural web search provider for web_search tool.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-prov-exa" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="providers.webSearchTimeoutSeconds" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Web Search Timeout</span>
+          <span class="setting-key-tag">providers.webSearchTimeoutSeconds</span>
+          
+        </div>
+        <p class="setting-desc">Maximum duration in seconds before web queries abort.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:6px;">
+              <wired-input id="ctrl-prov-timeout" type="number" value="60" style="width:70px;"></wired-input>
+              <span style="font-size:15px;">seconds</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-tools">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ShieldIcon" data-icon-size="18"></span> Agent Execution Safety Boundary (Headline Setting)</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Safety Mode</span>
+        </div>
+        
+    <div class="setting-row" data-key="tools.approvalMode" data-default="write">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Agent Approval Mode</span>
+          <span class="setting-key-tag">tools.approvalMode</span>
+          <span class="badge-modified" id="mod-badge-tools_approvalMode"><span class="badge-dot"></span> Modified (Default: write)</span>
+        </div>
+        <p class="setting-desc">Governing security posture for automated tool execution, writes, and shell invocations.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-radio-group id="ctrl-approval-mode" selected="yolo">
+              <wired-radio name="always-ask"><strong>always-ask</strong>: Interactive Paranoia — Prompt before every tool call (Read, Edit, Bash).</wired-radio>
+              <wired-radio name="write"><strong>write</strong>: Guarded Modification — Read auto-allowed; writes & commands prompt for approval.</wired-radio>
+              <wired-radio name="yolo"><strong>yolo</strong>: Autonomous (Full Speed) — Auto-approve tools; bash prompts only on safety patterns.</wired-radio>
+            </wired-radio-group>
+          
+        <button class="btn-reset" id="reset-btn-tools_approvalMode" title="Reset tools.approvalMode to default (write)" onclick="resetSingleSetting('tools.approvalMode')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ChecklistIcon" data-icon-size="18"></span> Command Pattern Safety Overrides</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Bash Rules</span>
+        </div>
+        <div class="setting-row" data-key="bash.patterns">
+          <div class="setting-info" style="flex:1;">
+            <div class="setting-title-line">
+              <span class="setting-label">Command Pattern Safety Rules</span>
+              <span class="setting-key-tag">bash.patterns</span>
+            </div>
+            <p class="setting-desc">Commands matching these glob patterns require explicit interactive confirmation even in YOLO mode.</p>
+            <table class="roles-table" style="margin:10px 0 8px;">
+              <thead>
+                <tr>
+                  <th style="width:34%;">Pattern Regex / Glob</th>
+                  <th style="width:22%;">Approval Policy</th>
+                  <th style="width:30%;">Safety Rationale</th>
+                  <th style="width:14%;text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#eee;padding:2px 6px;border-radius:4px;">git push*</code></td>
+                  <td><span class="role-effort" style="background:#555;">prompt</span></td>
+                  <td style="font-size:13.5px;color:#555;">Prevents pushing unreviewed commits to remote branches</td>
+                  <td style="text-align:right;"><button class="btn-secondary btn-xs">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><code style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#eee;padding:2px 6px;border-radius:4px;">rm -rf*</code></td>
+                  <td><span class="role-effort" style="background:#555;">prompt</span></td>
+                  <td style="font-size:13.5px;color:#555;">Prevents accidental recursive filesystem deletion</td>
+                  <td style="text-align:right;"><button class="btn-secondary btn-xs">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><code style="font-family:'JetBrains Mono',monospace;font-size:14px;background:#eee;padding:2px 6px;border-radius:4px;">chmod -R*</code></td>
+                  <td><span class="role-effort" style="background:#555;">prompt</span></td>
+                  <td style="font-size:13.5px;color:#555;">Blocks recursive permission modifications</td>
+                  <td style="text-align:right;"><button class="btn-secondary btn-xs">Edit</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="text-align:right;">
+              <button class="btn-secondary btn-sm"><span data-icon="ChecklistIcon" data-icon-size="14"></span> + Add Pattern Rule</button>
+            </div>
+          </div>
+        </div>
+        
+    <div class="setting-row" data-key="bash.allowCompoundCommands" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Allow Compound Shell Pipelines</span>
+          <span class="setting-key-tag">bash.allowCompoundCommands</span>
+          
+        </div>
+        <p class="setting-desc">Permit execution of chained shell commands using &&, ||, and pipes without splitting.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-bash-compound"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="bash.autoBackground.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Auto-Background Long Commands</span>
+          <span class="setting-key-tag">bash.autoBackground.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Automatically detach commands taking over 10 seconds into async background jobs.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-bash-autobg" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileCodeIcon" data-icon-size="18"></span> Code Intelligence, Diff Engine & AST Tools</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Editing Engines</span>
+        </div>
+        
+    <div class="setting-row" data-key="lsp.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Language Server Protocol (LSP)</span>
+          <span class="setting-key-tag">lsp.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Enable code intelligence features (hover, symbol search, diagnostics).</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="lsp.formatOnWrite" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Format File on Write</span>
+          <span class="setting-key-tag">lsp.formatOnWrite</span>
+          
+        </div>
+        <p class="setting-desc">Automatically invoke LSP code formatting before saving modified buffers.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-format" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="lsp.diagnosticsOnEdit" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Diagnostics on Edit</span>
+          <span class="setting-key-tag">lsp.diagnosticsOnEdit</span>
+          
+        </div>
+        <p class="setting-desc">Query compiler warnings and errors immediately after making file changes.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-diagnostics" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="edit.mode" data-default="apply_patch">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">File Modification Diff Mode</span>
+          <span class="setting-key-tag">edit.mode</span>
+          <span class="badge-modified" id="mod-badge-edit_mode"><span class="badge-dot"></span> Modified (Default: apply_patch)</span>
+        </div>
+        <p class="setting-desc">Algorithm used for applying LLM diff suggestions to source files.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-edit-mode" selected="hashline">
+              <wired-item value="apply_patch">apply_patch (Unified standard)</wired-item>
+              <wired-item value="hashline">hashline (Line hash indexed)</wired-item>
+              <wired-item value="patch">patch (Context search diff)</wired-item>
+              <wired-item value="replace">replace (Complete file replace)</wired-item>
+              <wired-item value="sloppy">sloppy (Permissive heuristic)</wired-item>
+            </wired-combo>
+          
+        <button class="btn-reset" id="reset-btn-edit_mode" title="Reset edit.mode to default (apply_patch)" onclick="resetSingleSetting('edit.mode')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="astGrep.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">ast-grep Syntax Tree Search</span>
+          <span class="setting-key-tag">astGrep.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Fast structural AST pattern searching across workspace repository files.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-astgrep-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="astEdit.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">ast-grep Structural Code Rewriting</span>
+          <span class="setting-key-tag">astEdit.enabled</span>
+          <span class="badge-experimental"><span data-icon="FlaskIcon" data-icon-size="12"></span> Experimental</span>
+        </div>
+        <p class="setting-desc">Syntax-directed tree-sitter AST rewriting for refactoring operations.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-astedit-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="PuzzleIcon" data-icon-size="18"></span> Built-in Tool Switches Grid</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">10 Tools</span>
+        </div>
+        <div style="padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>web_search.enabled</strong><div style="font-size:13px;color:#666;">Realtime neural web searches</div></div>
+            <wired-toggle id="tool-web_search" checked></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>browser.enabled</strong><div style="font-size:13px;color:#666;">Headless browser interaction</div></div>
+            <wired-toggle id="tool-browser" checked></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>github.enabled</strong><div style="font-size:13px;color:#666;">GitHub PR & issue operations</div></div>
+            <wired-toggle id="tool-github" checked></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>computer.enabled</strong><div style="font-size:13px;color:#666;">Desktop OS mouse/key automation</div></div>
+            <wired-toggle id="tool-computer"></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>generate_image.enabled</strong><div style="font-size:13px;color:#666;">Diffusion image generation</div></div>
+            <wired-toggle id="tool-generate_image"></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>todo.enabled</strong><div style="font-size:13px;color:#666;">Multi-step plan todo management</div></div>
+            <wired-toggle id="tool-todo" checked></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>checkpoint.enabled</strong><div style="font-size:13px;color:#666;">Rollback shadow commits</div></div>
+            <wired-toggle id="tool-checkpoint" checked></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>debug.enabled</strong><div style="font-size:13px;color:#666;">Subprocess debugger integration</div></div>
+            <wired-toggle id="tool-debug"></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>security.enabled</strong><div style="font-size:13px;color:#666;">Vulnerability scanner tools</div></div>
+            <wired-toggle id="tool-security"></wired-toggle>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;">
+            <div><strong>ask.enabled</strong><div style="font-size:13px;color:#666;">Interactive user question dialogs</div></div>
+            <wired-toggle id="tool-ask" checked></wired-toggle>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="PuzzleIcon" data-icon-size="18"></span> Model Context Protocol (MCP)</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">MCP Extensibility</span>
+        </div>
+        
+    <div class="setting-row" data-key="mcp.enableProjectConfig" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Enable Project .mcp.json Configuration</span>
+          <span class="setting-key-tag">mcp.enableProjectConfig</span>
+          <span class="badge-session"><span data-icon="ClockIcon" data-icon-size="12"></span> Requires New Session</span>
+        </div>
+        <p class="setting-desc">Automatically discover and initialize MCP servers configured in repository root.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mcp-project" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mcp.notifications" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">MCP Tool Event Notifications</span>
+          <span class="setting-key-tag">mcp.notifications</span>
+          
+        </div>
+        <p class="setting-desc">Display notifications when external MCP plugins register tools or emit logs.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mcp-notifications" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-context">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="LayerIcon" data-icon-size="18"></span> Context Compaction Pipeline</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Compaction Chain</span>
+        </div>
+        
+    <div class="setting-row" data-key="compaction.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Context Compaction Engine</span>
+          <span class="setting-key-tag">compaction.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Automatically compact historical turns when context window reaches limit.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-compaction-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Compaction Algorithm Priority Order</span>
+              <span class="setting-key-tag">compaction.methodOrder</span>
+            </div>
+            <p class="setting-desc">Reorderable priority sequence executed when context compaction triggers.</p>
+          </div>
+          <div class="setting-control" style="flex-direction:column;align-items:stretch;min-width:320px;">
+            <div id="compaction-methods-list" style="display:flex;flex-direction:column;gap:6px;">
+              <!-- Dynamically populated / reorderable -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="RulerIcon" data-icon-size="18"></span> Thresholds & Background Execution</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Triggers</span>
+        </div>
+        
+    <div class="setting-row" data-key="compaction.thresholdPercent" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Compaction Trigger Threshold</span>
+          <span class="setting-key-tag">compaction.thresholdPercent</span>
+          <span class="badge-sentinel"><span data-icon="RulerIcon" data-icon-size="12"></span> Sentinel: -1 (Auto: 80% of window)</span>
+        </div>
+        <p class="setting-desc">Context consumption percentage that triggers compaction. -1 selects model auto-limit.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:10px;">
+              <wired-slider id="ctrl-compaction-thresh" min="-1" max="95" value="-1"></wired-slider>
+              <span id="val-compaction-thresh" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;min-width:65px;">-1 (Auto)</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="compaction.handoffSaveToDisk" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Persist Handoffs to Disk</span>
+          <span class="setting-key-tag">compaction.handoffSaveToDisk</span>
+          
+        </div>
+        <p class="setting-desc">Save structured handoff memory summaries into session directory.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-compaction-save" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="compaction.asyncEnabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Asynchronous Compaction</span>
+          <span class="setting-key-tag">compaction.asyncEnabled</span>
+          
+        </div>
+        <p class="setting-desc">Perform memory compaction in background worker to avoid blocking interactive turns.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-compaction-async" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="extendedContext" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Request Extended Context Tiers</span>
+          <span class="setting-key-tag">extendedContext</span>
+          
+        </div>
+        <p class="setting-desc">Request 1M+ token context tiers for supported frontier models.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-extended-context"></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileTextIcon" data-icon-size="18"></span> System Prompts & Markdown Formatting</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Prompt Retention</span>
+        </div>
+        
+    <div class="setting-row" data-key="snapcompact.systemPrompt" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Compacted System Prompt Preset</span>
+          <span class="setting-key-tag">snapcompact.systemPrompt</span>
+          
+        </div>
+        <p class="setting-desc">Preamble instructions retained during memory compaction passes.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-snapcompact-prompt" selected="agents-md">
+              <wired-item value="none">none (Minimal prompt)</wired-item>
+              <wired-item value="agents-md">agents-md (AGENTS.md only)</wired-item>
+              <wired-item value="all">all (Full system context)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="ttsr.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Turn-to-Turn State Reconstruction (TTSR)</span>
+          <span class="setting-key-tag">ttsr.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Reconstruct verified agent state after compaction passes.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-ttsr-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="ttsr.judge" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Autonomous State Judge Model</span>
+          <span class="setting-key-tag">ttsr.judge</span>
+          <span class="badge-experimental"><span data-icon="FlaskIcon" data-icon-size="12"></span> Experimental</span>
+        </div>
+        <p class="setting-desc">Use secondary model to verify facts during state reconstruction.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-ttsr-judge" selected="auto">
+              <wired-item value="auto">auto (Heuristic check)</wired-item>
+              <wired-item value="on">on (Strict evaluation)</wired-item>
+              <wired-item value="off">off (Bypass judge)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="read.summarize.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Auto-Summarize Long Files</span>
+          <span class="setting-key-tag">read.summarize.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Automatically summarize files exceeding 1000 lines instead of returning raw lines.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-read-summarize" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="read.renderMarkdown" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Format Markdown on Read</span>
+          <span class="setting-key-tag">read.renderMarkdown</span>
+          
+        </div>
+        <p class="setting-desc">Format markdown tables, headings, and lists during file reading.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-read-markdown" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-files">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileCodeIcon" data-icon-size="18"></span> Diff Engine & File Read Limits</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Diff Matching</span>
+        </div>
+        
+    <div class="setting-row" data-key="edit.fuzzyMatch" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Fuzzy Edit Matching</span>
+          <span class="setting-key-tag">edit.fuzzyMatch</span>
+          
+        </div>
+        <p class="setting-desc">Tolerate minor whitespace, tab, or newline drift in diff search anchors.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-edit-fuzzymatch" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="edit.fuzzyThreshold" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Fuzzy Matching Threshold</span>
+          <span class="setting-key-tag">edit.fuzzyThreshold</span>
+          
+        </div>
+        <p class="setting-desc">Similarity ratio tolerance for reconciling fuzzy diff matches.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:10px;">
+              <wired-slider id="ctrl-edit-fuzzythresh" min="80" max="100" value="95"></wired-slider>
+              <span id="val-fuzzy" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:bold;min-width:44px;">0.95</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="read.defaultLimit" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Default File Read Limit</span>
+          <span class="setting-key-tag">read.defaultLimit</span>
+          
+        </div>
+        <p class="setting-desc">Safety threshold on maximum line count returned per Read tool call.</p>
+      </div>
+      <div class="setting-control">
+        
+            <div style="display:flex;align-items:center;gap:6px;">
+              <wired-input id="ctrl-read-limit" type="number" value="300" style="width:80px;"></wired-input>
+              <span style="font-size:15px;">lines</span>
+            </div>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="readLineNumbers" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Prepend Line Numbers on Read</span>
+          <span class="setting-key-tag">readLineNumbers</span>
+          
+        </div>
+        <p class="setting-desc">Prefix output with 1-based line numbers for accurate diff referencing.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-read-linenos" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ZapIcon" data-icon-size="18"></span> Language Server Performance</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">LSP Daemon</span>
+        </div>
+        
+    <div class="setting-row" data-key="lsp.lazy" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Lazy Language Server Start</span>
+          <span class="setting-key-tag">lsp.lazy</span>
+          
+        </div>
+        <p class="setting-desc">Delay spawning LSP daemon until the first file of that language is accessed.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-lazy" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="lsp.shared" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Shared Language Server Daemon</span>
+          <span class="setting-key-tag">lsp.shared</span>
+          
+        </div>
+        <p class="setting-desc">Share a single LSP daemon across parallel subagents to save memory.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-shared" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="lsp.diagnosticsDeduplicate" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Deduplicate Diagnostics</span>
+          <span class="setting-key-tag">lsp.diagnosticsDeduplicate</span>
+          
+        </div>
+        <p class="setting-desc">Suppress duplicate compilation warnings emitted across rapid edits.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-lsp-dedup" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FolderIcon" data-icon-size="18"></span> Additional Workspace Directories</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Source Roots</span>
+        </div>
+        <div style="padding:12px 18px 4px;">
+          <p style="font-size:14.5px;color:#666;margin:0 0 10px;">Additional filesystem roots exposed to file search, read, and editing tools:</p>
+          <div id="workspace-dirs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f5f5f5;border:1px solid #ccc;border-radius:6px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;">C:/Users/Galih/.zcode/skills</span>
+              <button class="btn-secondary btn-xs" onclick="removeWorkspaceDir(this)"><span data-icon="CrossIcon" data-icon-size="12"></span> Remove</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f5f5f5;border:1px solid #ccc;border-radius:6px;">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;">D:/shared-libs/core</span>
+              <button class="btn-secondary btn-xs" onclick="removeWorkspaceDir(this)"><span data-icon="CrossIcon" data-icon-size="12"></span> Remove</button>
+            </div>
+          </div>
+          <div style="padding-bottom:12px;text-align:right;">
+            <button class="btn-secondary btn-sm" onclick="addWorkspaceDir()"><span data-icon="FolderAddIcon" data-icon-size="14"></span> + Add Workspace Directory</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-shell">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="ChecklistIcon" data-icon-size="18"></span> Shell Execution & Runtime Kernels</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Execution Kernels</span>
+        </div>
+        
+    <div class="setting-row" data-key="bash.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Bash Tool Execution</span>
+          <span class="setting-key-tag">bash.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Allow autonomous agent to execute bash shell commands in repository root.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-bash-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="bashInterceptor.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Shell Command Interceptor</span>
+          <span class="setting-key-tag">bashInterceptor.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Intercept risky commands (recursive deletes, fork bombs) before execution.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-bash-interceptor" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="shellMinimizer.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Compiler Log Minimizer</span>
+          <span class="setting-key-tag">shellMinimizer.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Condense repetitive progress bars and noisy build logs in tool results.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-shell-minimizer" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="eval.py" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Python In-Memory Kernel</span>
+          <span class="setting-key-tag">eval.py</span>
+          
+        </div>
+        <p class="setting-desc">Execute Python snippets in a local persistent REPL session.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-eval-py" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="eval.js" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">JavaScript Node Kernel</span>
+          <span class="setting-key-tag">eval.js</span>
+          
+        </div>
+        <p class="setting-desc">Execute JavaScript code blocks using local Node.js environment.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-eval-js" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="python.kernelMode" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Python Kernel Lifecycle</span>
+          <span class="setting-key-tag">python.kernelMode</span>
+          <span class="badge-session"><span data-icon="ClockIcon" data-icon-size="12"></span> Requires New Session</span>
+        </div>
+        <p class="setting-desc">Retain memory state across python snippets vs fresh subprocess per call.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-python-kernel" selected="session">
+              <wired-item value="session">session (Persistent in-memory REPL)</wired-item>
+              <wired-item value="per-call">per-call (Clean isolated restart)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="RocketIcon" data-icon-size="18"></span> Task Parallelism & Git Worktrees</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Subagents</span>
+        </div>
+        
+    <div class="setting-row" data-key="task.maxConcurrency" data-default="16">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Max Parallel Subagents</span>
+          <span class="setting-key-tag">task.maxConcurrency</span>
+          <span class="badge-modified" id="mod-badge-task_maxConcurrency"><span class="badge-dot"></span> Modified (Default: 16)</span>
+        </div>
+        <p class="setting-desc">Upper limit on background subagents working concurrently.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-task-concurrency" type="number" value="32" style="width:70px;"></wired-input>
+        <button class="btn-reset" id="reset-btn-task_maxConcurrency" title="Reset task.maxConcurrency to default (16)" onclick="resetSingleSetting('task.maxConcurrency')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="task.eager" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Subagent Dispatch Eagerness</span>
+          <span class="setting-key-tag">task.eager</span>
+          
+        </div>
+        <p class="setting-desc">Whether scheduled subagents are spawned immediately or sequentially.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-task-eager" selected="always">
+              <wired-item value="default">default (Standard queue)</wired-item>
+              <wired-item value="preferred">preferred (Parallel priority)</wired-item>
+              <wired-item value="always">always (Immediate fan-out)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="task.maxRecursionDepth" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Max Agent Recursion Depth</span>
+          <span class="setting-key-tag">task.maxRecursionDepth</span>
+          
+        </div>
+        <p class="setting-desc">Maximum depth of child subagents spawned by existing subagents.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-task-recursion" type="number" value="2" style="width:70px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="task.isolation.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Git Worktree Subagent Isolation</span>
+          <span class="setting-key-tag">task.isolation.enabled</span>
+          <span class="badge-session"><span data-icon="ClockIcon" data-icon-size="12"></span> Requires New Session</span>
+        </div>
+        <p class="setting-desc">Spawn each subagent inside an isolated git worktree branch to avoid lock conflicts.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-task-isolation"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="worktree.clone" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Auto-Clone Worktree Roots</span>
+          <span class="setting-key-tag">worktree.clone</span>
+          
+        </div>
+        <p class="setting-desc">Automatically clone git worktrees for independent subagent task lanes.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-worktree-clone" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="plan.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Planning Mode Support</span>
+          <span class="setting-key-tag">plan.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Allow agent to create structured multi-step plans before implementing.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-plan-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="goal.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Goal Milestone Tracking</span>
+          <span class="setting-key-tag">goal.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Maintain high-level milestone status across turns.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-goal-enabled" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="title.refreshOnReplan" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Update Window Title on Replan</span>
+          <span class="setting-key-tag">title.refreshOnReplan</span>
+          
+        </div>
+        <p class="setting-desc">Reflect currently active sub-task in desktop window title.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-title-replan" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-memory">
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="BulbIcon" data-icon-size="18"></span> Long-Term Memory Storage Backend</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Memory Engine</span>
+        </div>
+        
+    <div class="setting-row" data-key="memory.backend" data-default="off">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Memory Persistence Engine</span>
+          <span class="setting-key-tag">memory.backend</span>
+          <span class="badge-modified" id="mod-badge-memory_backend"><span class="badge-dot"></span> Modified (Default: off)</span>
+        </div>
+        <p class="setting-desc">Storage backend for cross-session developer conventions and learnings.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-radio-group id="ctrl-memory-backend" selected="mnemopi">
+              <wired-radio name="off"><strong>off</strong>: Disabled — Zero cross-session memory</wired-radio>
+              <wired-radio name="local"><strong>local</strong>: Simple JSON — Flat memory file in project root</wired-radio>
+              <wired-radio name="hindsight"><strong>hindsight</strong>: Git Log — Memory commits stored in orphan git branch</wired-radio>
+              <wired-radio name="mnemopi"><strong>mnemopi</strong>: Vector + Graph — Neural semantic indexing & proactive recall (Active)</wired-radio>
+              <wired-radio name="sharpshooter"><strong>sharpshooter</strong>: Cloud Graph — Remote collaborative memory server</wired-radio>
+            </wired-radio-group>
+          
+        <button class="btn-reset" id="reset-btn-memory_backend" title="Reset memory.backend to default (off)" onclick="resetSingleSetting('memory.backend')"><span data-icon="RotateIcon" data-icon-size="13"></span></button>
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="autolearn.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Autolearn Recurring Coding Conventions</span>
+          <span class="setting-key-tag">autolearn.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Automatically extract architectural rules and user preferences during turn settlement.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-autolearn" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+
+      <div class="settings-card" id="mnemopi-config-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="MicroscopeIcon" data-icon-size="18"></span> Mnemopi Semantic Memory Settings</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Neural Graph</span>
+        </div>
+        
+    <div class="setting-row" data-key="mnemopi.scoping" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Memory Scoping Boundary</span>
+          <span class="setting-key-tag">mnemopi.scoping</span>
+          
+        </div>
+        <p class="setting-desc">Isolation level for semantic knowledge recall.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-mnemopi-scoping" selected="per-project">
+              <wired-item value="global">global (Shared across all projects)</wired-item>
+              <wired-item value="per-project">per-project (Isolated to repository)</wired-item>
+              <wired-item value="per-project-tagged">per-project-tagged (Tag-filtered)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.embeddingModel" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Vector Embedding Model</span>
+          <span class="setting-key-tag">mnemopi.embeddingModel</span>
+          
+        </div>
+        <p class="setting-desc">Model used to generate dense semantic vector embeddings.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-mnemopi-model" value="mistral/mistral-embed" style="width:200px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.embeddingVariant" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Language Vocabulary Dimension</span>
+          <span class="setting-key-tag">mnemopi.embeddingVariant</span>
+          
+        </div>
+        <p class="setting-desc">Target vocabulary dimensions for embedding index.</p>
+      </div>
+      <div class="setting-control">
+        
+            <wired-combo id="ctrl-mnemopi-variant" selected="en">
+              <wired-item value="en">en (English code & docs optimized)</wired-item>
+              <wired-item value="multilingual">multilingual (100+ natural languages)</wired-item>
+            </wired-combo>
+          
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.apiKey" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Embedding Provider Secret Key</span>
+          <span class="setting-key-tag">mnemopi.apiKey</span>
+          <span class="badge-secret"><span data-icon="LockIcon" data-icon-size="12"></span> Secret</span>
+        </div>
+        <p class="setting-desc">Authentication token for embedding API endpoint.</p>
+      </div>
+      <div class="setting-control">
+        <wired-input id="ctrl-mnemopi-key" type="password" value="••••••••••••••••" disabled style="width:180px;"></wired-input>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.autoRecall" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Proactive Knowledge Auto-Recall</span>
+          <span class="setting-key-tag">mnemopi.autoRecall</span>
+          
+        </div>
+        <p class="setting-desc">Inject relevant memories into context when matching topics arise.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mnemopi-recall" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.autoRetain" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Session Retain at Settlement</span>
+          <span class="setting-key-tag">mnemopi.autoRetain</span>
+          
+        </div>
+        <p class="setting-desc">Extract key learnings when completing conversations.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mnemopi-retain" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.enhancedRecall" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Multi-Hop Associative Graph Traversal</span>
+          <span class="setting-key-tag">mnemopi.enhancedRecall</span>
+          
+        </div>
+        <p class="setting-desc">Traverse entity graph for multi-layered conceptual recall.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mnemopi-enhanced" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="mnemopi.proactiveLinking" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Cross-Project Concept Linking</span>
+          <span class="setting-key-tag">mnemopi.proactiveLinking</span>
+          
+        </div>
+        <p class="setting-desc">Link related code patterns across multiple repositories.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-mnemopi-linking" checked></wired-toggle>
+        
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+  
+    <div class="screen" id="screen-advanced">
+      <div class="settings-card" style="border:2px solid #333;background:#fff;">
+        <div style="display:flex;align-items:flex-start;gap:16px;padding:16px;">
+          <div style="flex-shrink:0;" data-icon="CautionIcon" data-icon-size="34"></div>
+          <div>
+            <strong style="font-size:18px;">Caution: Advanced Configuration & Raw YAML</strong>
+            <p style="margin:4px 0 0;font-size:15px;color:#555;line-height:1.4;">
+              These values write directly to <code>~/.omp/agent/config.yml</code> and bypass UI schema validation.
+              Invalid YAML indentation, syntax errors, or mismatched types will cause <code>omp --mode rpc</code> to crash on launch.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="FileCodeIcon" data-icon-size="18"></span> Raw Configuration Editor (~/.omp/agent/config.yml)</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Live YAML</span>
+        </div>
+        <div style="padding:14px 18px;">
+          <wired-textarea id="raw-yaml-editor" rows="16" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.45;background:#ffffff;"></wired-textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+            <button class="btn-secondary btn-sm" onclick="validateYaml()"><span data-icon="TickIcon" data-icon-size="14"></span> Validate YAML Syntax</button>
+            <span id="yaml-status" style="font-size:14px;color:#666;">Status: Valid (11 sections, 527 keys)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-header">
+          <span style="display:flex;align-items:center;gap:8px;"><span data-icon="CautionIcon" data-icon-size="18"></span> Internal Diagnostic Flags & Factory Reset</span>
+          <span style="font-size:13px;color:#6b6b6b;font-weight:normal;">Internal & Reset</span>
+        </div>
+        <div style="padding:12px 18px;border-bottom:1px solid #e0e0e0;background:#fafafa;">
+          <wired-checkbox id="chk-advanced-only" checked text="Filter by advanced: true keys (132 internal.* keys)"></wired-checkbox>
+        </div>
+        
+    <div class="setting-row" data-key="debug.enabled" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Verbose Internal Debug Logging</span>
+          <span class="setting-key-tag">debug.enabled</span>
+          
+        </div>
+        <p class="setting-desc">Log internal RPC frames and HTTP payloads directly to stderr.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-debug-enabled"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        
+    <div class="setting-row" data-key="dev.autoqaConsent" data-default="">
+      <div class="setting-info">
+        <div class="setting-title-line">
+          <span class="setting-label">Automated QA Telemetry Consent</span>
+          <span class="setting-key-tag">dev.autoqaConsent</span>
+          
+        </div>
+        <p class="setting-desc">Allow anonymous test traces for automated QA verification runs.</p>
+      </div>
+      <div class="setting-control">
+        <wired-toggle id="ctrl-dev-autoqa"></wired-toggle>
+        
+      </div>
+    </div>
+  
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-title-line">
+              <span class="setting-label">Reset All Settings to Defaults</span>
+            </div>
+            <p class="setting-desc">Revert all 527 configuration keys back to factory defaults in ~/.omp/agent/config.yml.</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn-secondary btn-sm" style="border:2px dashed #333333;" onclick="resetAllFactoryDefaults()">
+              <span data-icon="RotateIcon" data-icon-size="14"></span> Reset to Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+        </div>
+
+        <!-- Sticky Footer Bar -->
+        <footer class="sticky-footer">
+          <div id="dirty-indicator" class="dirty-indicator">
+            <span class="badge-dot"></span>
+            <span><strong>3</strong> settings modified from default (~/.omp/agent/config.yml)</span>
+          </div>
+          <div class="footer-actions">
+            <button class="btn-secondary btn-sm" id="btn-reset-all" onclick="resetAllSettings()">
+              <span data-icon="RotateIcon" data-icon-size="14"></span>
+              <span>Reset Changes</span>
+            </button>
+            <button class="btn-primary btn-sm" id="btn-save-all" onclick="saveAllPreferences()">
+              <span data-icon="Tick2Icon" data-icon-size="14"></span>
+              <span>Save Preferences</span>
+            </button>
+          </div>
+        </footer>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Model Chooser Dialog -->
+  <wired-dialog id="model-dialog" elevation="3">
+    <div style="background:white; padding:20px; min-width:480px; text-align:left;">
+      <h3 id="dialog-model-title" style="margin:0 0 4px;font-size:22px;display:flex;align-items:center;gap:8px;">
+        <span data-icon="ChipIcon" data-icon-size="24"></span> Assign Model for Role
+      </h3>
+      <p id="dialog-model-desc" style="font-size:15px;color:#666;margin:0 0 16px;">
+        Configure target model identifier and reasoning effort level.
+      </p>
+      
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:bold;font-size:16px;display:block;margin-bottom:4px;">Select Model Preset:</label>
+        <wired-combo id="dialog-model-select" selected="ihub/cb/gpt-6-luna" style="width:100%;">
+          <wired-item value="ihub/cb/gpt-6-luna">ihub/cb/gpt-6-luna (Top Frontier Reasoning)</wired-item>
+          <wired-item value="ihub/cb/deepseek-v4.1-flash">ihub/cb/deepseek-v4.1-flash (Fast & Cost Effective)</wired-item>
+          <wired-item value="anthropic/claude-3-7-sonnet">anthropic/claude-3-7-sonnet (Hybrid Reasoning)</wired-item>
+          <wired-item value="gverse/ag/gemini-3.8-flash-high">gverse/ag/gemini-3.8-flash-high (Low Latency)</wired-item>
+          <wired-item value="ihub/ali/qwen3.8-omni-flash">ihub/ali/qwen3.8-omni-flash (Multimodal Fast)</wired-item>
+          <wired-item value="web/exa">web/exa (Neural Retrieval Engine)</wired-item>
+        </wired-combo>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-weight:bold;font-size:16px;display:block;margin-bottom:4px;">Or Custom Model Identifier:</label>
+        <wired-input id="dialog-custom-model" placeholder="provider/model:effort..." style="width:100%;"></wired-input>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="font-weight:bold;font-size:16px;display:block;margin-bottom:4px;">Reasoning Effort Level:</label>
+        <wired-radio-group id="dialog-effort-radio" selected="max">
+          <wired-radio name="off">off (No thinking)</wired-radio>
+          <wired-radio name="low">low (2k tokens)</wired-radio>
+          <wired-radio name="medium">medium (8k tokens)</wired-radio>
+          <wired-radio name="high">high (16k tokens)</wired-radio>
+          <wired-radio name="max">max (32k tokens)</wired-radio>
+          <wired-radio name="auto">auto (Provider dynamic)</wired-radio>
+        </wired-radio-group>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:12px;">
+        <button class="btn-secondary" onclick="closeModelChooser()">Cancel</button>
+        <button class="btn-primary" onclick="applyModelChooser()">Apply Assignment</button>
+      </div>
+    </div>
+  </wired-dialog>
+
+  <!-- Provider Diagnostics Dialog -->
+  <wired-dialog id="provider-dialog" elevation="3">
+    <div style="background:white; padding:20px; min-width:440px; text-align:left;">
+      <h3 id="dialog-provider-title" style="margin:0 0 4px;font-size:22px;display:flex;align-items:center;gap:8px;">
+        <span data-icon="ServerIcon" data-icon-size="24"></span> Provider Diagnostics
+      </h3>
+      <p style="font-size:15px;color:#666;margin:0 0 16px;">
+        Verifying upstream endpoint latency, token quotas, and active models
+      </p>
+      
+      <div style="border:1.5px solid #333;border-radius:255px 15px 225px 15px / 15px 225px 15px 255px;padding:14px;background:#f9f9f9;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:14px;color:#666;">Endpoint:</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">https://api.ihub.internal/v1</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:14px;color:#666;">Auth Header:</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;">Bearer ••••••••••••</span>
+        </div>
+        <div id="provider-diag-status" style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px dashed #bbb;">
+          <wired-spinner id="provider-spinner" spinning style="display:inline-block;"></wired-spinner>
+          <span style="font-size:15px;">Pinging provider health endpoint...</span>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn-secondary" onclick="closeProviderDialog()">Close</button>
+      </div>
+    </div>
+  </wired-dialog>
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <!-- SPA Client Script -->
+  <script>
+    
+    // -------------------------------------------------------------
+    // CLIENT-SIDE SPA LOGIC FOR OMP DESKTOP SETTINGS WIREFRAME
+    // -------------------------------------------------------------
+    
+    // State
+    const modifiedSettings = new Map();
+    let currentActiveScreen = 'general';
+    let compactionMethods = [
+      { id: 'remote', name: 'remote', desc: 'Upstream Provider Context Summary API' },
+      { id: 'snapcompact', name: 'snapcompact', desc: 'Fast Heuristic Markdown System Snapshot' },
+      { id: 'handoff', name: 'handoff', desc: 'Multi-Turn Subagent State Serialization' },
+      { id: 'shake', name: 'shake', desc: 'Evict Large Ephemeral Tool Artifacts' },
+      { id: 'soft', name: 'soft', desc: 'Prune Stale Chain-of-Thought Reasoning' }
+    ];
+
+    // Seed initial modified settings as required by spec (3 settings)
+    modifiedSettings.set('theme.dark', { current: 'dark-nord', defaultVal: 'dark-tokyo-night' });
+    modifiedSettings.set('symbolPreset', { current: 'nerd', defaultVal: 'unicode' });
+    modifiedSettings.set('tools.approvalMode', { current: 'yolo', defaultVal: 'write' });
+
+    // Pre-populate raw YAML editor with realistic excerpt
+    const DEFAULT_YAML = `# omp agent configuration (v18.6.1)
+version: 2
+tools:
+  approvalMode: yolo
+  patterns:
+    - match: "git push*"
+      approval: prompt
+    - match: "rm -rf*"
+      approval: prompt
+modelRoles:
+  default: ihub/cb/deepseek-v4.1-flash
+  smol: ihub/cb/deepseek-v4.1-flash:low
+  slow: ihub/cb/gpt-6-luna:max
+  plan: ihub/gpt-6-luna:max
+  vision: ihub/ali/qwen3.8-omni-flash:auto
+  designer: gverse/ag/gemini-3.8-flash-high:high
+  EXPLORER: ihub/ali/qwen3.8-omni-flash:minimal
+  LIBRARIAN: ihub/ali/qwen3.8-omni-flash:low
+  web: web/exa
+memory:
+  backend: mnemopi
+  mnemopi:
+    scoping: per-project
+    embeddingModel: mistral/mistral-embed
+    embeddingVariant: en
+    autoRecall: true
+    autoRetain: true
+compaction:
+  enabled: true
+  thresholdPercent: -1
+  methodOrder: [remote, snapcompact, handoff, shake, soft]
+edit:
+  mode: hashline
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+`;
+
+    // 1. ICON INJECTION HELPER
+    function injectIcons(root) {
+      const container = root || document;
+      const elements = container.querySelectorAll('[data-icon]');
+      elements.forEach(el => {
+        const name = el.getAttribute('data-icon');
+        const size = parseInt(el.getAttribute('data-icon-size') || '18', 10);
+        const cls = el.getAttribute('data-icon-class') || '';
+        if (window.di) {
+          el.innerHTML = window.di(name, size, cls);
+        }
+      });
+    }
+
+    // 2. WIRED ELEMENTS RE-RENDER HELPER
+    function refreshWiredElements(root) {
+      const container = root || document;
+      const selectors = 'wired-combo, wired-toggle, wired-slider, wired-input, wired-textarea, wired-search-input, wired-radio-group, wired-checkbox, wired-dialog, wired-card';
+      container.querySelectorAll(selectors).forEach(el => {
+        if (typeof el.wiredRender === 'function') {
+          try { el.wiredRender(true); } catch (e) {}
+        }
+        if (typeof el.requestUpdate === 'function') {
+          try { el.requestUpdate(); } catch (e) {}
+        }
+      });
+    }
+
+    // 3. TOAST NOTIFICATION
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.innerHTML = `<span data-icon="Tick2Icon" data-icon-size="20"></span> <span>${message}</span>`;
+      injectIcons(toast);
+      toast.style.display = 'flex';
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
+    // 4. DIRTY FOOTER TRACKING
+    function updateDirtyFooter() {
+      const indicator = document.getElementById('dirty-indicator');
+      const saveBtn = document.getElementById('btn-save-all');
+      const resetBtn = document.getElementById('btn-reset-all');
+      const count = modifiedSettings.size;
+
+      if (count > 0) {
+        indicator.innerHTML = `<span class="badge-dot"></span> <strong>${count}</strong> ${count === 1 ? 'setting' : 'settings'} modified from default (~/.omp/agent/config.yml)`;
+        indicator.className = 'dirty-indicator is-dirty';
+        saveBtn.removeAttribute('disabled');
+        saveBtn.classList.remove('btn-disabled');
+        resetBtn.removeAttribute('disabled');
+        resetBtn.classList.remove('btn-disabled');
+      } else {
+        indicator.innerHTML = `<span data-icon="Tick2Icon" data-icon-size="16"></span> All settings synced with ~/.omp/agent/config.yml`;
+        indicator.className = 'dirty-indicator';
+        injectIcons(indicator);
+        saveBtn.setAttribute('disabled', 'true');
+        saveBtn.classList.add('btn-disabled');
+        resetBtn.setAttribute('disabled', 'true');
+        resetBtn.classList.add('btn-disabled');
+      }
+    }
+
+    // Mark a setting as modified
+    function markSettingModified(key, currentVal, defaultVal) {
+      if (!key) return;
+      modifiedSettings.set(key, { current: currentVal, defaultVal: defaultVal || 'default' });
+      
+      // Ensure badge and reset button exist on that row
+      const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_');
+      const row = document.querySelector(`.setting-row[data-key="${key}"]`);
+      if (row) {
+        let badge = document.getElementById(`mod-badge-${safeKey}`);
+        if (!badge) {
+          const titleLine = row.querySelector('.setting-title-line');
+          if (titleLine) {
+            const span = document.createElement('span');
+            span.className = 'badge-modified';
+            span.id = `mod-badge-${safeKey}`;
+            span.innerHTML = `<span class="badge-dot"></span> Modified`;
+            titleLine.appendChild(span);
+          }
+        } else {
+          badge.style.display = 'inline-flex';
+        }
+
+        let resetBtn = document.getElementById(`reset-btn-${safeKey}`);
+        if (!resetBtn) {
+          const controlDiv = row.querySelector('.setting-control');
+          if (controlDiv) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-reset';
+            btn.id = `reset-btn-${safeKey}`;
+            btn.title = `Reset ${key} to default`;
+            btn.innerHTML = `<span data-icon="RotateIcon" data-icon-size="13"></span>`;
+            btn.onclick = () => resetSingleSetting(key);
+            controlDiv.appendChild(btn);
+            injectIcons(btn);
+          }
+        } else {
+          resetBtn.style.display = 'inline-flex';
+        }
+      }
+
+      updateDirtyFooter();
+    }
+
+    // Reset single setting to default
+    window.resetSingleSetting = function(key) {
+      const data = modifiedSettings.get(key);
+      const defaultVal = data ? data.defaultVal : 'default';
+
+      // Specific control resets
+      if (key === 'theme.dark') {
+        const el = document.getElementById('ctrl-theme-dark');
+        if (el) el.selected = 'dark-tokyo-night';
+      } else if (key === 'symbolPreset') {
+        const el = document.getElementById('ctrl-symbol-preset');
+        if (el) el.selected = 'unicode';
+      } else if (key === 'tools.approvalMode') {
+        const el = document.getElementById('ctrl-approval-mode');
+        if (el) el.selected = 'write';
+      } else if (key === 'edit.mode') {
+        const el = document.getElementById('ctrl-edit-mode');
+        if (el) el.selected = 'apply_patch';
+      } else if (key === 'memory.backend') {
+        const el = document.getElementById('ctrl-memory-backend');
+        if (el) el.selected = 'off';
+        const card = document.getElementById('mnemopi-config-card');
+        if (card) card.style.display = 'none';
+      } else if (key === 'task.maxConcurrency') {
+        const el = document.getElementById('ctrl-task-concurrency');
+        if (el) el.value = '16';
+      }
+
+      modifiedSettings.delete(key);
+
+      const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_');
+      const badge = document.getElementById(`mod-badge-${safeKey}`);
+      if (badge) badge.style.display = 'none';
+      const resetBtn = document.getElementById(`reset-btn-${safeKey}`);
+      if (resetBtn) resetBtn.style.display = 'none';
+
+      updateDirtyFooter();
+      showToast(`Reverted ${key} to default (${defaultVal})`);
+    };
+
+    // Reset all settings
+    window.resetAllSettings = function() {
+      // Revert initial 3
+      window.resetSingleSetting('theme.dark');
+      window.resetSingleSetting('symbolPreset');
+      window.resetSingleSetting('tools.approvalMode');
+      
+      // Clear remaining
+      modifiedSettings.clear();
+      document.querySelectorAll('.badge-modified').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.btn-reset').forEach(el => el.style.display = 'none');
+      updateDirtyFooter();
+      showToast('Reverted all modified settings to factory defaults');
+    };
+
+    // Save all preferences
+    window.saveAllPreferences = function() {
+      if (modifiedSettings.size === 0) return;
+      const count = modifiedSettings.size;
+      modifiedSettings.clear();
+      document.querySelectorAll('.badge-modified').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.btn-reset').forEach(el => el.style.display = 'none');
+      updateDirtyFooter();
+      showToast(`Successfully saved ${count} settings to ~/.omp/agent/config.yml`);
+    };
+
+    // 5. SCREEN SWITCHING
+    const SCREEN_META = {
+      'general': { title: 'General Preferences', desc: 'Desktop shell language, UI scaling, and code presentation', icon: 'SettingIcon' },
+      'appearance': { title: 'Appearance (omp CLI)', desc: 'Terminal themes, status lines, spinners, and glyph sets', icon: 'PaintBrushIcon' },
+      'interaction': { title: 'Interaction & Keys', desc: 'Prompt keybindings, sound chimes, and interaction confirmations', icon: 'SwitchIcon' },
+      'sessions': { title: 'Sessions & Storage', desc: 'Working directories, multi-profile isolation, and storage GC', icon: 'DrawerIcon' },
+      'connection': { title: 'Connection & RPC Daemon', desc: 'Wails Go runtime bridge, RPC frames, and session status', icon: 'SignalIcon' },
+      'about': { title: 'About OMP Desktop', desc: 'App architecture, CLI engine version, and documentation', icon: 'InfoIcon' },
+      'model': { title: 'Model & Reasoning', desc: 'Role assignments, reasoning effort budgets, and strategic advisor', icon: 'ChipIcon' },
+      'providers': { title: 'Providers & Auth', desc: 'LLM gateways, masked credentials, and web scrapers', icon: 'ServerIcon' },
+      'tools': { title: 'Tools & Permissions', desc: 'Execution safety boundaries, bash overrides, and MCP plugins', icon: 'ShieldIcon' },
+      'context': { title: 'Context & Compaction', desc: 'Compaction pipeline order, memory thresholds, and markdown', icon: 'LayerIcon' },
+      'files': { title: 'Files & Editing', desc: 'Diff algorithms, fuzzy matching tolerance, and source roots', icon: 'FileCodeIcon' },
+      'shell': { title: 'Shell & Tasks', desc: 'Command runners, parallel subagent caps, and git worktrees', icon: 'ChecklistIcon' },
+      'memory': { title: 'Memory', desc: 'Long-term knowledge storage, mnemopi vectors, and autolearn', icon: 'BulbIcon' },
+      'advanced': { title: 'Advanced (raw config)', desc: 'Direct editor for ~/.omp/agent/config.yml and factory reset', icon: 'CautionIcon' }
+    };
+
+    window.switchScreen = function(screenId) {
+      if (!SCREEN_META[screenId]) return;
+      currentActiveScreen = screenId;
+
+      // Update nav items
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        if (btn.getAttribute('data-screen') === screenId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update screen visibility
+      document.querySelectorAll('.screen').forEach(scr => {
+        if (scr.id === `screen-${screenId}`) {
+          scr.classList.add('active');
+        } else {
+          scr.classList.remove('active');
+        }
+      });
+
+      // Update Titlebar & Header
+      const meta = SCREEN_META[screenId];
+      const titlebarCenter = document.getElementById('titlebar-center-text');
+      if (titlebarCenter) titlebarCenter.textContent = `Settings — ${meta.title}`;
+
+      const headerTitle = document.getElementById('main-header-title');
+      if (headerTitle) {
+        headerTitle.innerHTML = (window.di ? window.di(meta.icon, 24) : '') + ' <span>' + meta.title + '</span>';
+      }
+      const headerDesc = document.getElementById('main-header-desc');
+      if (headerDesc) headerDesc.textContent = meta.desc;
+
+      // Scroll top
+      const scrollEl = document.querySelector('.main-content-scroll');
+      if (scrollEl) scrollEl.scrollTop = 0;
+
+      // Reset search filter
+      const searchInput = document.getElementById('settings-search');
+      if (searchInput && searchInput.value) {
+        filterSettings(searchInput.value);
+      } else {
+        clearSearchFilter();
+      }
+
+      // Re-sketch wired-elements on the newly shown screen
+      setTimeout(() => {
+        const activeScreenEl = document.getElementById(`screen-${screenId}`);
+        if (activeScreenEl) refreshWiredElements(activeScreenEl);
+      }, 30);
+    };
+
+    // 6. REAL-TIME SEARCH FILTERING
+    function clearSearchFilter() {
+      document.querySelectorAll('.setting-row').forEach(row => row.style.display = 'flex');
+      document.querySelectorAll('.settings-card').forEach(card => card.style.display = 'block');
+      const banner = document.getElementById('search-banner');
+      if (banner) banner.style.display = 'none';
+    }
+
+    function filterSettings(query) {
+      const q = (query || '').trim().toLowerCase();
+      if (!q) {
+        clearSearchFilter();
+        return;
+      }
+
+      let matchesInCurrentScreen = 0;
+      const activeScreenEl = document.getElementById(`screen-${currentActiveScreen}`);
+      if (activeScreenEl) {
+        activeScreenEl.querySelectorAll('.settings-card').forEach(card => {
+          let visibleRowsInCard = 0;
+          card.querySelectorAll('.setting-row').forEach(row => {
+            const text = (row.innerText || '').toLowerCase();
+            const key = (row.getAttribute('data-key') || '').toLowerCase();
+            if (text.includes(q) || key.includes(q)) {
+              row.style.display = 'flex';
+              visibleRowsInCard++;
+              matchesInCurrentScreen++;
+            } else {
+              row.style.display = 'none';
+            }
+          });
+          card.style.display = (visibleRowsInCard > 0) ? 'block' : 'none';
+        });
+      }
+
+      // Count matches across ALL other screens
+      let otherMatchesCount = 0;
+      const otherSectionsWithHits = [];
+      Object.keys(SCREEN_META).forEach(sid => {
+        if (sid === currentActiveScreen) return;
+        const scr = document.getElementById(`screen-${sid}`);
+        if (scr) {
+          let hits = 0;
+          scr.querySelectorAll('.setting-row').forEach(row => {
+            const text = (row.innerText || '').toLowerCase();
+            const key = (row.getAttribute('data-key') || '').toLowerCase();
+            if (text.includes(q) || key.includes(q)) hits++;
+          });
+          if (hits > 0) {
+            otherMatchesCount += hits;
+            otherSectionsWithHits.push({ id: sid, title: SCREEN_META[sid].title, count: hits });
+          }
+        }
+      });
+
+      // Update Search Banner
+      const banner = document.getElementById('search-banner');
+      if (banner) {
+        banner.style.display = 'flex';
+        let bannerText = `Found <strong>${matchesInCurrentScreen}</strong> ${matchesInCurrentScreen === 1 ? 'setting' : 'settings'} matching "<strong>${q}</strong>" in ${SCREEN_META[currentActiveScreen].title}.`;
+        if (otherSectionsWithHits.length > 0) {
+          bannerText += ` Also found in: ` + otherSectionsWithHits.map(s => `<a href="#" onclick="switchScreen('${s.id}'); return false;">${s.title} (${s.count})</a>`).join(', ');
+        }
+        banner.innerHTML = `<div>${bannerText}</div> <button class="btn-secondary btn-xs" onclick="clearSearchInput()"><span data-icon="CrossIcon" data-icon-size="12"></span> Clear</button>`;
+        injectIcons(banner);
+      }
+    }
+
+    window.clearSearchInput = function() {
+      const searchInput = document.getElementById('settings-search');
+      if (searchInput) searchInput.value = '';
+      clearSearchFilter();
+    };
+
+    // 7. COMPACTION METHOD REORDERING
+    function renderCompactionMethods() {
+      const container = document.getElementById('compaction-methods-list');
+      if (!container) return;
+      container.innerHTML = compactionMethods.map((m, idx) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f9f9f9;border:1.5px solid #333;border-radius:120px 8px 110px 8px / 8px 110px 8px 120px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#333;color:#fff;padding:1px 6px;border-radius:10px;">${idx + 1}</span>
+            <div>
+              <strong style="font-family:'JetBrains Mono',monospace;font-size:14px;">${m.name}</strong>
+              <div style="font-size:13px;color:#666;">${m.desc}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="btn-secondary btn-xs" ${idx === 0 ? 'disabled' : ''} onclick="moveCompactionMethod(${idx}, -1)" title="Move Up">▲</button>
+            <button class="btn-secondary btn-xs" ${idx === compactionMethods.length - 1 ? 'disabled' : ''} onclick="moveCompactionMethod(${idx}, 1)" title="Move Down">▼</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.moveCompactionMethod = function(index, delta) {
+      const targetIndex = index + delta;
+      if (targetIndex < 0 || targetIndex >= compactionMethods.length) return;
+      const temp = compactionMethods[index];
+      compactionMethods[index] = compactionMethods[targetIndex];
+      compactionMethods[targetIndex] = temp;
+      renderCompactionMethods();
+      markSettingModified('compaction.methodOrder', JSON.stringify(compactionMethods.map(m => m.name)), '["remote","snapcompact","handoff","shake","soft"]');
+      showToast('Updated compaction pipeline priority order');
+    };
+
+    // 8. MODEL CHOOSER DIALOG
+    let currentRoleTarget = null;
+    window.openModelChooser = function(role, currentModel, currentEffort) {
+      currentRoleTarget = role;
+      const dialog = document.getElementById('model-dialog');
+      if (!dialog) return;
+
+      document.getElementById('dialog-model-title').innerHTML = `<span data-icon="ChipIcon" data-icon-size="24"></span> Assign Model for Role: <code>${role}</code>`;
+      document.getElementById('dialog-model-desc').textContent = `Assign target LLM and reasoning effort for ${role} specialization.`;
+      
+      const select = document.getElementById('dialog-model-select');
+      if (select) select.selected = currentModel.split(':')[0];
+      
+      const customInput = document.getElementById('dialog-custom-model');
+      if (customInput) customInput.value = currentModel;
+
+      const effortRadio = document.getElementById('dialog-effort-radio');
+      if (effortRadio) effortRadio.selected = currentEffort.replace(':', '') || 'auto';
+
+      injectIcons(dialog);
+      dialog.open = true;
+      setTimeout(() => refreshWiredElements(dialog), 30);
+    };
+
+    window.closeModelChooser = function() {
+      const dialog = document.getElementById('model-dialog');
+      if (dialog) dialog.open = false;
+    };
+
+    window.applyModelChooser = function() {
+      if (!currentRoleTarget) return;
+      const customInput = document.getElementById('dialog-custom-model');
+      const select = document.getElementById('dialog-model-select');
+      const effortRadio = document.getElementById('dialog-effort-radio');
+
+      let chosenModel = (customInput && customInput.value.trim()) ? customInput.value.trim() : (select ? select.selected : 'ihub/cb/gpt-6-luna');
+      let effort = effortRadio ? effortRadio.selected : 'auto';
+
+      const modelEl = document.getElementById(`role-model-${currentRoleTarget}`);
+      if (modelEl) modelEl.textContent = chosenModel;
+
+      const effortEl = document.getElementById(`role-effort-${currentRoleTarget}`);
+      if (effortEl) effortEl.textContent = effort === 'off' ? ':off' : `:${effort}`;
+
+      closeModelChooser();
+      markSettingModified(`modelRoles.${currentRoleTarget}`, `${chosenModel}:${effort}`, 'default');
+      showToast(`Assigned ${chosenModel}:${effort} to role ${currentRoleTarget}`);
+    };
+
+    // 9. PROVIDER DIAGNOSTICS DIALOG
+    window.openProviderDialog = function(providerId) {
+      const dialog = document.getElementById('provider-dialog');
+      if (!dialog) return;
+
+      const title = document.getElementById('dialog-provider-title');
+      if (title) title.innerHTML = `<span data-icon="ServerIcon" data-icon-size="24"></span> Provider Diagnostics: ${providerId}`;
+
+      const statusBox = document.getElementById('provider-diag-status');
+      if (statusBox) {
+        statusBox.innerHTML = `
+          <wired-spinner id="provider-spinner" spinning style="display:inline-block;"></wired-spinner>
+          <span style="font-size:15px;">Pinging provider health endpoint & checking quotas...</span>
+        `;
+        setTimeout(() => {
+          statusBox.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;font-weight:bold;font-size:16px;">
+              <span data-icon="TickIcon" data-icon-size="16"></span>
+              <span>200 OK · Connected</span>
+            </div>
+            <div style="font-size:13.5px;color:#555;margin-top:2px;">Round-trip latency: 38ms · Token balance: 840,000 · 14 models operational</div>
+          `;
+          injectIcons(statusBox);
+        }, 600);
+      }
+
+      injectIcons(dialog);
+      dialog.open = true;
+      setTimeout(() => refreshWiredElements(dialog), 30);
+    };
+
+    window.closeProviderDialog = function() {
+      const dialog = document.getElementById('provider-dialog');
+      if (dialog) dialog.open = false;
+    };
+
+    // 10. SECRET KEY REVEAL
+    window.toggleRevealKey = function(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        input.value = 'sk-ihub-88f2910b37cd9a42e';
+        showToast('API key unmasked for preview (Readonly)');
+      } else {
+        input.type = 'password';
+        input.value = '••••••••••••••••';
+      }
+    };
+
+    // 11. DYNAMIC CONTROLS & EVENT LISTENERS
+    function initListeners() {
+      // Font size slider
+      const fontSlider = document.getElementById('ctrl-app-fontsize');
+      if (fontSlider) {
+        fontSlider.addEventListener('change', (e) => {
+          const val = e.detail ? e.detail.value : fontSlider.value;
+          const readout = document.getElementById('val-fontsize');
+          if (readout) readout.textContent = `${val}px`;
+          markSettingModified('app.uiFontSize', `${val}px`, '16px');
+        });
+      }
+
+      // Line numbers toggle
+      const lineNumToggle = document.getElementById('ctrl-app-linenumbers');
+      if (lineNumToggle) {
+        lineNumToggle.addEventListener('change', (e) => {
+          const checked = e.detail ? e.detail.checked : lineNumToggle.checked;
+          document.querySelectorAll('#code-preview .ln').forEach(ln => {
+            ln.style.display = checked ? 'inline' : 'none';
+          });
+          markSettingModified('app.showLineNumbers', checked, true);
+        });
+      }
+
+      // Code theme combo
+      const codeThemeCombo = document.getElementById('ctrl-app-codetheme');
+      if (codeThemeCombo) {
+        codeThemeCombo.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : codeThemeCombo.selected;
+          const tag = document.getElementById('preview-theme-tag');
+          if (tag) tag.textContent = val;
+          markSettingModified('app.codeTheme', val, 'dracula');
+        });
+      }
+
+      // Dark theme combo
+      const darkThemeCombo = document.getElementById('ctrl-theme-dark');
+      if (darkThemeCombo) {
+        darkThemeCombo.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : darkThemeCombo.selected;
+          markSettingModified('theme.dark', val, 'dark-tokyo-night');
+        });
+      }
+
+      // Symbol preset combo
+      const symbolCombo = document.getElementById('ctrl-symbol-preset');
+      if (symbolCombo) {
+        symbolCombo.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : symbolCombo.selected;
+          markSettingModified('symbolPreset', val, 'unicode');
+        });
+      }
+
+      // Tools approval mode radio group
+      const approvalRadio = document.getElementById('ctrl-approval-mode');
+      if (approvalRadio) {
+        approvalRadio.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : approvalRadio.selected;
+          markSettingModified('tools.approvalMode', val, 'write');
+        });
+      }
+
+      // Edit mode combo
+      const editModeCombo = document.getElementById('ctrl-edit-mode');
+      if (editModeCombo) {
+        editModeCombo.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : editModeCombo.selected;
+          markSettingModified('edit.mode', val, 'apply_patch');
+        });
+      }
+
+      // Memory backend radio
+      const memoryRadio = document.getElementById('ctrl-memory-backend');
+      if (memoryRadio) {
+        memoryRadio.addEventListener('selected', (e) => {
+          const val = e.detail ? e.detail.selected : memoryRadio.selected;
+          const card = document.getElementById('mnemopi-config-card');
+          if (card) {
+            card.style.display = (val === 'mnemopi') ? 'block' : 'none';
+          }
+          markSettingModified('memory.backend', val, 'off');
+        });
+      }
+
+      // Temperature slider
+      const tempSlider = document.getElementById('ctrl-temperature');
+      if (tempSlider) {
+        tempSlider.addEventListener('change', (e) => {
+          const val = e.detail ? e.detail.value : tempSlider.value;
+          const el = document.getElementById('val-temp');
+          if (el) el.textContent = val == -1 ? '-1 (Auto)' : val;
+          markSettingModified('temperature', val, -1);
+        });
+      }
+
+      // TopP slider
+      const topPSlider = document.getElementById('ctrl-topP');
+      if (topPSlider) {
+        topPSlider.addEventListener('change', (e) => {
+          const val = e.detail ? e.detail.value : topPSlider.value;
+          const el = document.getElementById('val-topp');
+          if (el) el.textContent = val == -1 ? '-1 (Auto)' : val;
+          markSettingModified('topP', val, -1);
+        });
+      }
+
+      // Compaction threshold slider
+      const compSlider = document.getElementById('ctrl-compaction-thresh');
+      if (compSlider) {
+        compSlider.addEventListener('change', (e) => {
+          const val = e.detail ? e.detail.value : compSlider.value;
+          const el = document.getElementById('val-compaction-thresh');
+          if (el) el.textContent = val == -1 ? '-1 (Auto)' : `${val}%`;
+          markSettingModified('compaction.thresholdPercent', val, -1);
+        });
+      }
+
+      // Fuzzy matching threshold slider
+      const fuzzySlider = document.getElementById('ctrl-edit-fuzzythresh');
+      if (fuzzySlider) {
+        fuzzySlider.addEventListener('change', (e) => {
+          const val = e.detail ? e.detail.value : fuzzySlider.value;
+          const formatted = (val / 100).toFixed(2);
+          const el = document.getElementById('val-fuzzy');
+          if (el) el.textContent = formatted;
+          markSettingModified('edit.fuzzyThreshold', formatted, '0.95');
+        });
+      }
+
+      // Global change listener on toggles
+      document.querySelectorAll('wired-toggle').forEach(tgl => {
+        tgl.addEventListener('change', () => {
+          const row = tgl.closest('.setting-row');
+          if (row) {
+            const key = row.getAttribute('data-key');
+            markSettingModified(key, tgl.checked, !tgl.checked);
+          }
+        });
+      });
+
+      // Search input
+      const searchInput = document.getElementById('settings-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          filterSettings(searchInput.value);
+        });
+      }
+    }
+
+    // 12. WORKSPACE DIRECTORY MANAGEMENT
+    window.removeWorkspaceDir = function(btn) {
+      const row = btn.closest('div');
+      if (row) {
+        row.remove();
+        markSettingModified('workspace.additionalDirectories', 'modified', '[]');
+        showToast('Removed workspace directory root');
+      }
+    };
+
+    window.addWorkspaceDir = function() {
+      const list = document.getElementById('workspace-dirs-list');
+      if (!list) return;
+      const newPath = prompt('Enter additional workspace directory path:', 'D:/projects/shared-tools');
+      if (newPath) {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f5f5f5;border:1px solid #ccc;border-radius:6px;';
+        item.innerHTML = `
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;">${newPath}</span>
+          <button class="btn-secondary btn-xs" onclick="removeWorkspaceDir(this)"><span data-icon="CrossIcon" data-icon-size="12"></span> Remove</button>
+        `;
+        list.appendChild(item);
+        injectIcons(item);
+        markSettingModified('workspace.additionalDirectories', 'modified', '[]');
+        showToast(`Added ${newPath} to workspace roots`);
+      }
+    };
+
+    // 13. EXTRA ACTIONS
+    window.runStorageGC = function() {
+      showToast('Vacuuming sqlite caches & pruning cold sessions...');
+      setTimeout(() => {
+        const label = document.getElementById('gc-last-run');
+        if (label) label.textContent = 'Last run: Just now (Freed 524 MB)';
+        showToast('Storage garbage collection completed: Freed 524 MB');
+      }, 700);
+    };
+
+    window.stopAllSessions = function() {
+      showToast('Terminated 1 active session daemon (PID 14820)');
+    };
+
+    window.checkForUpdates = function() {
+      showToast('Checking GitHub releases... omp-desktop v0.1.0 is up to date.');
+    };
+
+    window.validateYaml = function() {
+      const editor = document.getElementById('raw-yaml-editor');
+      const status = document.getElementById('yaml-status');
+      if (status) {
+        status.textContent = 'Status: Valid (11 sections, 527 keys verified)';
+        status.style.color = '#333333';
+        showToast('YAML syntax valid: No schema violations found');
+      }
+    };
+
+    window.resetAllFactoryDefaults = function() {
+      if (confirm('Are you sure you want to erase ~/.omp/agent/config.yml and reset all 527 keys to defaults?')) {
+        window.resetAllSettings();
+        showToast('Factory reset complete: Default configuration generated');
+      }
+    };
+
+    // 14. INITIAL BOOTSTRAP
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set initial raw YAML content
+      const yamlEditor = document.getElementById('raw-yaml-editor');
+      if (yamlEditor) yamlEditor.value = DEFAULT_YAML;
+
+      // Render compaction methods
+      renderCompactionMethods();
+
+      // Inject all icons
+      injectIcons();
+
+      // Setup listeners
+      initListeners();
+
+      // Render initial dirty footer (3 modified settings)
+      updateDirtyFooter();
+
+      // Initial wired elements render
+      setTimeout(() => {
+        refreshWiredElements();
+      }, 50);
+    });
+  
+  </script>
+</body>
+</html>

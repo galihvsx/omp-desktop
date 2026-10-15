@@ -3,12 +3,15 @@ import { ShieldAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useOmpChatStore } from "@/stores/omp-chat-store";
+import { useTranslation } from "@/lib/i18n";
+import { useOmpSession, useOmpSessionActions } from "@/features/omp";
 
 export function PermissionDock() {
-  const approval = useOmpChatStore((state) => state.pendingApproval);
-  const respondApproval = useOmpChatStore((state) => state.respondApproval);
+  const approval = useOmpSession()?.pendingApproval ?? null;
+  const respondApproval = useOmpSessionActions().respondApproval;
+  const { t } = useTranslation();
   const [value, setValue] = useState("");
 
   if (!approval) {
@@ -19,16 +22,16 @@ export function PermissionDock() {
 
   return (
     <div className="shrink-0 px-3 pb-2">
-      <div className="mx-auto w-full max-w-3xl rounded-xl border bg-card p-3 shadow-md">
+      <Card size="sm" className="mx-auto w-full max-w-3xl px-3">
         <div className="flex items-center gap-2">
           <ShieldAlert className="size-4 shrink-0 text-muted-foreground" />
           <Badge variant="secondary" className="shrink-0">
-            Persetujuan
+            {t("workspace.permissionTitle")}
           </Badge>
           <span className="min-w-0 flex-1 truncate text-ui-base font-medium">
             {title}
           </span>
-          <span className="min-w-0 max-w-[40%] shrink-0 truncate font-mono text-ui-xs text-muted-foreground">
+          <span className="min-w-0 max-w-2/5 shrink-0 truncate font-mono text-ui-xs text-muted-foreground">
             {id}
           </span>
         </div>
@@ -49,14 +52,14 @@ export function PermissionDock() {
         ) : method === "confirm" ? (
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" onClick={() => void respondApproval("true")}>
-              Setujui
+              {t("workspace.permissionApprove")}
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => void respondApproval("false")}
             >
-              Tolak
+              {t("workspace.permissionDeny")}
             </Button>
           </div>
         ) : (
@@ -74,16 +77,16 @@ export function PermissionDock() {
           >
             <Input
               autoFocus
-              placeholder="Ketik balasan"
+              placeholder={t("workspace.permissionReplyPlaceholder")}
               value={value}
               onChange={(event) => setValue(event.target.value)}
             />
             <Button size="sm" type="submit">
-              Kirim
+              {t("workspace.permissionSubmit")}
             </Button>
           </form>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

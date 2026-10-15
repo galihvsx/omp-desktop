@@ -1,84 +1,145 @@
-import { SquareTerminal } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Edit2Icon,
+  FileTextIcon,
+  FolderIcon,
+  MoreHorizontalIcon,
+  Settings2Icon,
+  TerminalSquareIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ChipTrigger } from "@/components/ui/chip-trigger";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useOmpChatStore } from "@/stores/omp-chat-store";
-
-const STATUS_LABEL: Record<string, string> = {
-  disconnected: "Terputus",
-  connecting: "Menjalankan omp…",
-  ready: "Siap",
-  busy: "omp sedang bekerja…",
-};
-
-const STATUS_DOT: Record<string, string> = {
-  disconnected: "bg-muted-foreground/50",
-  connecting: "bg-chart-2 animate-pulse",
-  ready: "bg-primary",
-  busy: "bg-primary animate-pulse",
-};
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MonoValue } from "@/components/ui/mono-value";
+import { useOmpSession, useOmpSessionActions } from "@/features/omp";
+import { useNavigate } from "@/hooks/use-navigate";
+import { useTranslation } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
+import { WindowControls } from "@/components/title-bar";
 
 export function WorkspaceHeader({
-  onToggleFrameLog,
+  onToggleTerminal,
 }: {
-  onToggleFrameLog?: () => void;
+  onToggleTerminal?: () => void;
 }) {
-  const status = useOmpChatStore((state) => state.status);
-  const sessionId = useOmpChatStore((state) => state.sessionId);
-  const start = useOmpChatStore((state) => state.start);
-  const stop = useOmpChatStore((state) => state.stop);
+  const runtime = useOmpSession();
+  const { t } = useTranslation();
+  const { history, back, navigate } = useNavigate();
+  const stop = useOmpSessionActions().stop;
+  const status = runtime?.status ?? "disconnected";
+  const isRpcLive = status === "ready" || status === "busy";
+
+  const title = runtime?.title || t("sidebar.newSession");
 
   return (
-    <header className="flex h-11 shrink-0 items-center gap-3 border-b px-3">
-      <span
-        aria-hidden="true"
-        className={`size-2 shrink-0 rounded-full ${STATUS_DOT[status]}`}
-      />
-      <span className="text-ui-sm text-muted-foreground">
-        {STATUS_LABEL[status]}
-      </span>
-      {sessionId ? (
-        <span className="max-w-[12rem] truncate rounded-md border px-1.5 py-0.5 font-mono text-ui-xs text-muted-foreground">
-          {sessionId}
-        </span>
-      ) : null}
-
-      <span className="flex-1" />
-
-      {status === "disconnected" ? (
-        <Button size="sm" variant="outline" onClick={() => void start()}>
-          Mulai sesi
+    <header className="flex h-9 shrink-0 items-center justify-between border-b px-2 select-none titlebar bg-background">
+      <div
+        className="flex items-center gap-1.5 min-w-0"
+        style={{ ["--wails-draggable" as string]: "no-drag" }}
+      >
+        <Button
+          onClick={back}
+          disabled={history.length === 0}
+          size="icon-sm"
+          variant="ghost"
+          className="disabled:opacity-30"
+          title="Back"
+        >
+          <ChevronLeftIcon className="size-3.5" />
         </Button>
-      ) : (
-        <Button size="sm" variant="outline" onClick={() => void stop()}>
-          Hentikan
+        <Button
+          disabled
+          size="icon-sm"
+          variant="ghost"
+          className="disabled:opacity-30"
+          title="Forward"
+        >
+          <ChevronRightIcon className="size-3.5" />
         </Button>
-      )}
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger
+        <ChipTrigger
+          tone="header"
+          chevron="none"
+          className="bg-transparent border-0 border-none"
+          icon={<FolderIcon className="size-3.5 shrink-0 text-muted-foreground" />}
+          label={
+            <span className="text-ellipsis w-42 overflow-hidden text-sm text-ui-xs leading-none ml-1">
+              {title}
+            </span>
+          }
+          // trailing={
+          //   <MonoValue className="inline-flex items-center gap-1 rounded bg-transparent border-0 border-none px-1 py-0.5 shrink-0">
+          //     <span
+          //       className={cn(
+          //         "size-1.5 rounded-full shrink-0",
+          //         isRpcLive ? "bg-chart-2" : "bg-muted-foreground/40",
+          //       )}
+          //     />
+          //     rpc
+          //   </MonoValue>
+          // }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger
             render={
               <Button
-                aria-label="Frame log"
-                size="icon"
+                size="icon-sm"
                 variant="ghost"
-                onClick={onToggleFrameLog}
+                className="shrink-0"
+                aria-label="Session options"
               />
             }
           >
-            <SquareTerminal className="size-4" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Frame log</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+            <MoreHorizontalIcon className="size-3.5" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-max p-2 px-2">
+            <DropdownMenuItem
+              onClick={() => {
+                const newTitle = window.prompt("Rename session:", title);
+                if (newTitle && runtime) {
+                  runtime.title = newTitle;
+                }
+              }}
+            >
+              <Edit2Icon />
+              Rename session
+            </DropdownMenuItem>
+            {onToggleTerminal && (
+              <DropdownMenuItem onClick={onToggleTerminal}>
+                <TerminalSquareIcon />
+                {t("terminal.title")}
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={() => navigate({ name: "settings" })}>
+              <Settings2Icon />
+              {t("sidebar.settings")}
+            </DropdownMenuItem>
+            {runtime && status !== "disconnected" ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => void stop(runtime.key)}
+                >
+                  {t("common.stop")}
+                </DropdownMenuItem>
+              </>
+            ) : null}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="flex-1 h-full min-w-4" />
+
+      <WindowControls />
     </header>
   );
 }

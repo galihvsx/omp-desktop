@@ -1,9 +1,8 @@
 import { create } from "zustand";
 
 export type View =
-  | { name: "dashboard" }
-  | { name: "chat" }
-  | { name: "conversation"; sessionId: string }
+  | { name: "new-session"; cwd?: string }
+  | { name: "conversation"; key: string }
   | { name: "settings" };
 
 type NavigateState = {
@@ -14,7 +13,7 @@ type NavigateState = {
 };
 
 export const useNavigate = create<NavigateState>((set) => ({
-  view: { name: "dashboard" },
+  view: { name: "new-session" },
   history: [],
 
   navigate: (view) =>

@@ -1,32 +1,32 @@
 import { Composer } from "@/components/workspace/composer";
 import { ConversationTimeline } from "@/components/workspace/conversation";
-import { FrameLog } from "@/components/workspace/frame-log";
 import { PermissionDock } from "@/components/workspace/permission-dock";
-import { StatusBar } from "@/components/workspace/status-bar";
+import { SessionConflictBanner } from "@/components/workspace/session-conflict-banner";
 import { WorkspaceHeader } from "@/components/workspace/workspace-header";
-import { initOmpStore } from "@/stores/omp-chat-store";
-import { useFrameLogStore } from "@/stores/frame-log-store";
+import { WorkspacePanel } from "@/components/workspace/workspace-panel";
+import NewSessionPage from "@/pages/new-session";
+import { initOmpStore, useOmpSession, useOmpTerminal } from "@/features/omp";
 
-// Subscribe to the omp:frame / omp:rpc-exit events exactly once per window.
-// Guarded because the Wails runtime is absent when the frontend is opened in
-// a plain browser dev server.
-try {
-  initOmpStore();
-} catch {
-  // no Wails runtime (browser-only dev) — frames will not arrive.
-}
+initOmpStore();
 
 export default function ChatPage() {
-  const toggleFrameLog = useFrameLogStore((state) => state.toggle);
+  const { toggle: toggleTerminal } = useOmpTerminal();
+  const runtime = useOmpSession();
+
+  if (!runtime) {
+    return <NewSessionPage />;
+  }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
-      <WorkspaceHeader onToggleFrameLog={toggleFrameLog} />
-      <ConversationTimeline />
+    <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
+      <WorkspaceHeader onToggleTerminal={toggleTerminal} />
+      <SessionConflictBanner />
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        <ConversationTimeline />
+        <WorkspacePanel />
+      </div>
       <PermissionDock />
       <Composer />
-      <FrameLog />
-      <StatusBar />
     </div>
   );
 }

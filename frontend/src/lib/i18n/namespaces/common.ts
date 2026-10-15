@@ -1,0 +1,51 @@
+export const commonEn = {
+  justNow: "now",
+  untitledSession: "(untitled session)",
+  stop: "Stop",
+  retry: "Try again",
+  cleanExit: "clean",
+  toolFailed: "Tool failed",
+  unknownTool: "unknown",
+  approvalRequested: "omp needs your approval",
+  historyReadFailed: "Could not read session history",
+  sessionStartFailed: "Could not start omp",
+  sessionNotResponding: "omp is not responding",
+  sessionStartTimeout:
+    "The session was stopped after waiting too long. Try sending again.",
+  sessionStopFailed: "Could not stop omp",
+  commandFailed: "omp command failed",
+  commandRejected: "The omp process rejected the command.",
+  rpcExited: "omp RPC process exited",
+  rpcExitedHint: "Start a new session to continue.",
+  sendFailed: "Could not send message",
+  abortFailed: "Could not abort",
+  respondFailed: "Could not respond",
+  bridgeUnavailable:
+    "Wails bridge unavailable. Run the app through `wails dev` or a built binary.",
+} as const;
+
+export const commonId: Record<keyof typeof commonEn, string> = {
+  justNow: "baru",
+  untitledSession: "(sesi tanpa judul)",
+  stop: "Hentikan",
+  retry: "Coba lagi",
+  cleanExit: "bersih",
+  toolFailed: "Tool gagal",
+  unknownTool: "tidak dikenal",
+  approvalRequested: "omp butuh persetujuanmu",
+  historyReadFailed: "Gagal membaca riwayat sesi",
+  sessionStartFailed: "Gagal menjalankan omp",
+  sessionNotResponding: "omp tidak merespons",
+  sessionStartTimeout:
+    "Sesi dihentikan setelah menunggu terlalu lama. Coba kirim lagi.",
+  sessionStopFailed: "Gagal menghentikan omp",
+  commandFailed: "Perintah omp gagal",
+  commandRejected: "Proses omp menolak perintah tersebut.",
+  rpcExited: "Proses RPC omp berhenti",
+  rpcExitedHint: "Mulai sesi baru untuk melanjutkan.",
+  sendFailed: "Gagal mengirim pesan",
+  abortFailed: "Gagal membatalkan",
+  respondFailed: "Gagal merespons",
+  bridgeUnavailable:
+    "Jembatan Wails tidak tersedia. Jalankan aplikasi lewat `wails dev` atau biner hasil build.",
+};

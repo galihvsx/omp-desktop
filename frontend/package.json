@@ -1,7 +1,9 @@
 {
   "name": "frontend",
   "private": true,
+  "description": "UI for OMP Desktop, a Wails-based desktop shell for the omp coding agent.",
   "version": "0.0.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +21,8 @@
     "@streamdown/math": "^1.0.3",
     "@streamdown/mermaid": "^1.0.3",
     "@tailwindcss/vite": "^4.3.3",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "@xyflow/react": "^12.12.0",
     "ai": "^7.0.130",
     "ansi-to-react": "^6.2.6",
